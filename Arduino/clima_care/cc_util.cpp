@@ -25,5 +25,6 @@ int cc::consulta_banco(const String& expressao_sql, String* resposta) {
   if (resposta) {
     *resposta = http.getString();
   }
+  http.end();
   return http_codigo_resposta;
 }
