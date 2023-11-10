@@ -87,10 +87,9 @@ cc::terminal::retorno::operator cc::terminal::retorno::valor() const {
 cc::terminal::map_aux::operator cc::terminal::map_str_cmd&() {
   return m;
 }
-cc::terminal::map_aux& cc::terminal::map_aux::cmd(const std::string& identificador, const String& descricao, const std::function<retorno(const params&)>& func, const String& manual) {
+cc::terminal::map_aux& cc::terminal::map_aux::cmd(const std::string& identificador, const String& descricao, const std::function<retorno(const params&)>& func) {
   m[identificador].descricao = descricao;
   m[identificador].func = func;
-  m[identificador].manual = manual;
   return *this;
 }
 
@@ -121,8 +120,8 @@ cc::terminal::retorno cc::terminal::executar(
 
     if (it != comandos.end()) {
       auto r = it->second.func({ entrada, stream, rotulo + '>' + it->first.c_str() });
-      if (r.v != r.MANTER) {
-        return r.v == r.INICIO ? r : retorno();
+      if (r.v == r.INICIO) {
+        return r;
       }
       else {
         entrada.clear();
@@ -132,20 +131,14 @@ cc::terminal::retorno cc::terminal::executar(
       //imprimir identificador e descrição do comando
       for (const auto& cmd : comandos)
         stream.printf("%-13s%s\n", cmd.first.c_str(), cmd.second.descricao.c_str());
-      stream.print('\n');
-    }
-    else if (identificador == "manual") {
-      identificador = entrada.readString();
-      it = comandos.find(identificador.c_str());
-      if (it != comandos.end()) {
-        stream.printf("%s\n\n", it->second.manual.c_str());
-      }
-      else {
-        stream.printf("Comando \"%s\" desconhecido.\n\n", identificador.c_str());
-      }
+      stream.print(
+        "ajuda        Lista todos os comandos disponiveis\n"
+        "voltar       Volta um sub-menu\n"
+        "inicio       Volta ao menu principal\n"
+      );
     }
     else if (identificador == "voltar") 
-      return retorno(retorno::VOLTAR);
+      return retorno(retorno::MANTER);
     else if (identificador == "inicio")
       return retorno(retorno::INICIO);
     else 

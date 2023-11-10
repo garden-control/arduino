@@ -16,7 +16,7 @@ namespace cc {
       friend terminal;
     public:
       enum valor {
-        INICIO, VOLTAR, MANTER
+        INICIO, MANTER
       };
     private:
       const valor v = MANTER;
@@ -35,7 +35,6 @@ namespace cc {
     struct comando {
       String descricao;
       std::function<retorno(const params&)> func;
-      String manual;
     };
 
     typedef std::unordered_map<std::string, comando> map_str_cmd;
@@ -44,7 +43,7 @@ namespace cc {
     public:
       map_str_cmd m;
       operator map_str_cmd&();
-      map_aux& cmd(const std::string& identificador, const String& descricao, const std::function<retorno(const params&)>& func, const String& manual = "");
+      map_aux& cmd(const std::string& identificador, const String& descricao, const std::function<retorno(const params&)>& func);
     };
 
   private:
