@@ -6,6 +6,7 @@
 #include "cc_util.h"
 #include "cc_sens_solo.h"
 #include "cc_sens_reserv.h"
+#include "cc_controlador_solo.h"
 
 
 const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
@@ -23,6 +24,21 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
     args.stream.println("resposta: " + resposta);
     return {};
   }
+).cmd(
+  "ctrl",
+  "Inicia/pausa controle",
+  [](const cc::terminal::params& args) -> cc::terminal::retorno {
+    cc::controlador_solo::pausa = !cc::controlador_solo::pausa;
+    Serial.println(cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
+    return {};
+  };
+).cmd(
+  "ctrl_status",
+  "Checa status de controle",
+    [](const cc::terminal::params& args) -> cc::terminal::retorno {
+      Serial.println(cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
+      return {};
+    }
 ).cmd(
   "wifi",
   "Acesso as opcoes de wifi",
