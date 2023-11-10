@@ -8,7 +8,7 @@ namespace cc {
   private:
     static constexpr float    peso    = 0.8f;   //peso do filtro
     static constexpr unsigned dt      = 100 ;   //intervalo de tempo entre amostras (ms)
-    static constexpr float    gatilho = 0.5f;   //acima desse valor, o reservatorio esta vazio 
+    static constexpr float    gatilho = 0.45f;   //acima desse valor, o reservatorio esta vazio 
 
     static float f_valor;
     static char ligado;
@@ -20,6 +20,7 @@ namespace cc {
     static bool vazio();
     static void ligar(int espera_n_amostras = 0);
     static void desligar();
+    static terminal::retorno plot(const terminal::params& args);
   private:
     static void tarefa_leitura(void* pv_args);
   };

@@ -36,3 +36,17 @@ void cc::sens_reserv::tarefa_leitura(void* pv_args) {
     digitalWrite(PIN::LIGA_SENS_RESERV, LOW);
   }
 }
+cc::terminal::retorno cc::sens_reserv::plot(const terminal::params& args) {
+  args.stream.println("Digite qualquer coisa para sair...");
+  ligar();
+  while (!args.stream.available()) {
+    args.stream.println(f_valor);
+    delay(100);
+  }
+  desligar();
+  while (args.stream.available()) {
+    args.stream.read();
+    delay(10);
+  }
+  return terminal::retorno{};
+}

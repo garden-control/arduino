@@ -12,7 +12,7 @@ void cc::sens_solo::iniciar() {
   xTaskCreate(tarefa_leitura, "leitura_sens_solo", 2048, nullptr, 1, nullptr);
 }
 float cc::sens_solo::umidade() {
-  return f_umidade;
+  return 1.0f - f_umidade;
 }
 void cc::sens_solo::liga(int espera_n_amostras) {
   ligado++;

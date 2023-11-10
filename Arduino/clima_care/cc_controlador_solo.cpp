@@ -5,8 +5,8 @@
 #include "cc_sens_reserv.h"
 
 cc::controlador_solo cc::controlador_solo::unico;
-float cc::controlador_solo::f_umidade_max = 0.5f;
-float cc::controlador_solo::f_umidade_min = 0.0f;
+float cc::controlador_solo::f_umidade_max = 0.7f;
+float cc::controlador_solo::f_umidade_min = 0.4f;
 bool cc::controlador_solo::pausa = true;
 
 void cc::controlador_solo::tarefa_controle(void* pv_args) {

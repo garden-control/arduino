@@ -29,14 +29,14 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
   "Inicia/pausa controle",
   [](const cc::terminal::params& args) -> cc::terminal::retorno {
     cc::controlador_solo::pausa = !cc::controlador_solo::pausa;
-    Serial.println(cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
+    Serial.println(!cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
     return {};
-  };
+  }
 ).cmd(
   "ctrl_status",
   "Checa status de controle",
     [](const cc::terminal::params& args) -> cc::terminal::retorno {
-      Serial.println(cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
+      Serial.println(!cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
       return {};
     }
 ).cmd(
@@ -61,6 +61,10 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
         cc::sens_reserv::desligar();
         return {};
       }
+    ).cmd(
+      "reserv_plot",
+      "Plota leitura do sensor do reservatorio",
+      cc::sens_reserv::plot
     );
     return cc::terminal::executar(args.rotulo, args.entrada, args.stream, cmds);
   }
