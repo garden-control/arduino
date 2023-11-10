@@ -58,7 +58,7 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
       [](const cc::terminal::params& args) -> cc::terminal::retorno {
         cc::sens_reserv::liga(10);
         args.stream.print(cc::sens_reserv::vazio() ? "Vazio\n" : "Cheio\n");
-        cc::sens_reserv::desligar();
+        cc::sens_reserv::desliga();
         return {};
       }
     ).cmd(

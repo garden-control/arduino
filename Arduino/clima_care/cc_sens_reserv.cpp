@@ -19,7 +19,7 @@ void cc::sens_reserv::liga(int espera_n_amostras) {
   if (espera_n_amostras)
     delay(espera_n_amostras * dt);
 }
-void cc::sens_reserv::desligar() {
+void cc::sens_reserv::desliga() {
   ligado -= (ligado > 0);
 }
 void cc::sens_reserv::tarefa_leitura(void* pv_args) {
@@ -43,7 +43,7 @@ cc::terminal::retorno cc::sens_reserv::plot(const terminal::params& args) {
     args.stream.println(f_valor);
     delay(100);
   }
-  desligar();
+  desliga();
   while (args.stream.available()) {
     args.stream.read();
     delay(10);

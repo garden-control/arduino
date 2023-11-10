@@ -19,7 +19,7 @@ namespace cc {
   public:
     static bool vazio();
     static void liga(int espera_n_amostras = 0);
-    static void desligar();
+    static void desliga();
     static terminal::retorno plot(const terminal::params& args);
   private:
     static void tarefa_leitura(void* pv_args);
