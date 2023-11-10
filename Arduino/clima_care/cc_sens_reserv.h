@@ -18,7 +18,7 @@ namespace cc {
     void iniciar() override;
   public:
     static bool vazio();
-    static void ligar(int espera_n_amostras = 0);
+    static void liga(int espera_n_amostras = 0);
     static void desligar();
     static terminal::retorno plot(const terminal::params& args);
   private:

@@ -15,7 +15,7 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
   "Teste de sql",
   [](const cc::terminal::params& args) -> cc::terminal::retorno {
     String resposta;
-    int http_codigo = http_codigo = cc::consulta_banco(
+    int http_codigo = cc::consulta_banco(
       "insert into SensorData (localizacao, umidade, temperatura, indice_calor, SensorSolo) values"
       "(\"sala\", \"37%\", \"36C\", \"sla\", \"umido\")",
       &resposta
@@ -56,7 +56,7 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
       "resev",
       "Exibe status do reservatorio",
       [](const cc::terminal::params& args) -> cc::terminal::retorno {
-        cc::sens_reserv::ligar(10);
+        cc::sens_reserv::liga(10);
         args.stream.print(cc::sens_reserv::vazio() ? "Vazio\n" : "Cheio\n");
         cc::sens_reserv::desligar();
         return {};

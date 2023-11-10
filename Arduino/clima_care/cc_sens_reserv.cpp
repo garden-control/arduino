@@ -14,7 +14,7 @@ void cc::sens_reserv::iniciar() {
 bool cc::sens_reserv::vazio() {
   return f_valor > gatilho;
 }
-void cc::sens_reserv::ligar(int espera_n_amostras) {
+void cc::sens_reserv::liga(int espera_n_amostras) {
   ligado++;
   if (espera_n_amostras)
     delay(espera_n_amostras * dt);
@@ -38,7 +38,7 @@ void cc::sens_reserv::tarefa_leitura(void* pv_args) {
 }
 cc::terminal::retorno cc::sens_reserv::plot(const terminal::params& args) {
   args.stream.println("Digite qualquer coisa para sair...");
-  ligar();
+  liga();
   while (!args.stream.available()) {
     args.stream.println(f_valor);
     delay(100);

@@ -14,7 +14,7 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
     while (pausa) delay(10);
     while (!pausa) {
       sens_solo::liga(10);
-      sens_reserv::ligar(10);
+      sens_reserv::liga(10);
       if (sens_solo::umidade() < f_umidade_min && !sens_reserv::vazio()) {
         digitalWrite(PIN::LIGA_BOMBA, HIGH);
         while (!pausa && sens_solo::umidade() < f_umidade_max && !sens_reserv::vazio()) {
