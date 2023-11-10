@@ -3,7 +3,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $query = $_POST["query"];
     $pdo;
     try {
-        $pdo = new PDO("mysql:host=localhost;dbname=clima_care", "root", "");
+        $pdo = new PDO("mysql:host=localhost;dbname=id21218477_gardeningcontrol", "id21218477_igorb", "HostMysql12!");
         $pdo->SetAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     catch (PDOException $e) {
