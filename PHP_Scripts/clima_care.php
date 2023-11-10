@@ -1,37 +1,30 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $servername = "localhost";
+    // REPLACE with your Database name
+    $dbname = "id21218477_gardeningcontrol";
+    // REPLACE with Database user
+    $username = "id21218477_igorb";
+    // REPLACE with Database user password
+    $password = "HostMysql12!";
+    
     $query = $_POST["query"];
-    $pdo;
-    try {
-        $pdo = new PDO("mysql:host=localhost;dbname=id21218477_gardeningcontrol", "id21218477_igorb", "HostMysql12!");
-        $pdo->SetAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
     }
-    catch (PDOException $e) {
-        http_response_code(500);
-        echo "Falha ao conectar ao banco de dados: " . $e->getMessage();
-        die();
+    
+    if ($conn->query($query) === true) {
+        echo "Atualizado com sucesso!";
+    } 
+    else {
+        echo "Erro: " . $query . "<br>" . $conn->error;
     }
-    try {
-        $statement = $pdo->prepare($query);
-        $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        if (empty($result)) {
-            http_response_code(200);
-            echo "Nenhum erro";
-            die();
-        }
-        else {
-            http_response_code(200);
-            echo "Nenhum erro\n";
-            print_r($result);
-            die();
-        }
-    }
-    catch (PDOException $e) {
-        http_response_code(400);
-        echo "Erro: " . $e->getMessage();
-        die();
-    }
+
+    $conn->close();
+    
 }
 else {
     http_response_code(400);

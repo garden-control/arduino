@@ -13,12 +13,13 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
   "sql",
   "Teste de sql",
   [](const cc::terminal::params& args) -> cc::terminal::retorno {
-    for (; args.stream.available(); delay(10)) args.stream.read();
-    args.stream.print("SQL: ");
-    String sql_expr = cc::espera_linha(args.stream);
-    args.stream.println(sql_expr);
     String resposta;
-    args.stream.println(String("retorno: ") + cc::consulta_banco(sql_expr, &resposta));
+    int http_codigo = http_codigo = cc::consulta_banco(
+      "insert into SensorData (localizacao, umidade, temperatura, indice_calor, SensorSolo) values"
+      "(\"sala\", \"37%\", \"36C\", \"sla\", \"umido\")",
+      &resposta
+    );
+    args.stream.println(String("retorno: ") + http_codigo);
     args.stream.println("resposta: " + resposta);
     return {};
   }

@@ -13,7 +13,7 @@ void cc::wifi::iniciar() {
   if (arq) {
     ssid = arq.readStringUntil('\n');
     senha = arq.readStringUntil('\n');
-    WiFi.begin(ssid, senha)
+    WiFi.begin(ssid, senha);
   }
   arq.close();
   mtx_spiffs.liberar();
