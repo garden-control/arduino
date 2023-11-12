@@ -14,6 +14,7 @@ namespace cc {
     static float umidade();
     static float temperatura();
     static float indice_calor();
+    static void envia_banco();
   };
 };
 
