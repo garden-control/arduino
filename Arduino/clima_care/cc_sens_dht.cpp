@@ -13,3 +13,6 @@ float cc::sens_dht::umidade() {
 float cc::sens_dht::temperatura() {
   return dht.readTemperature();
 }
+float cc::sens_dht::indice_calor() {
+  return dht.computeHeatIndex();
+}

@@ -13,6 +13,8 @@ namespace cc {
   public:
     static float umidade();
     static float temperatura();
+    static float indice_calor();
+    
   };
 };
 
