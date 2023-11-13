@@ -6,7 +6,7 @@
 #include "cc_util.h"
 
 cc::controlador_solo cc::controlador_solo::unico;
-float cc::controlador_solo::f_umidade_max = 0.7f;
+float cc::controlador_solo::f_umidade_max = 0.55f;
 float cc::controlador_solo::f_umidade_min = 0.4f;
 bool cc::controlador_solo::pausa = true;
 
