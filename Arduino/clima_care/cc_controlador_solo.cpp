@@ -38,8 +38,8 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
       }
       sens_solo::desliga();
       sens_reserv::desliga();
-      //espera 5 minutos checando para "pausa" a cada 100ms (para facilitar demonstração em bancada)
-      for (int espera = 5 * 60 * 1000, parte = 100, cumprido = 0; cumprido < espera && !pausa; cumprido += parte)
+      //espera 5 segundos checando para "pausa" a cada 100ms (para facilitar demonstração em bancada)
+      for (int espera = 5 * 1000, parte = 100, cumprido = 0; cumprido < espera && !pausa; cumprido += parte)
         delay(parte);
     }
   }
