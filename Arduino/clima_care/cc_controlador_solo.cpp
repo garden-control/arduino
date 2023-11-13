@@ -8,7 +8,7 @@
 cc::controlador_solo cc::controlador_solo::unico;
 float cc::controlador_solo::f_umidade_max = 0.55f;
 float cc::controlador_solo::f_umidade_min = 0.4f;
-bool cc::controlador_solo::pausa = true;
+bool cc::controlador_solo::pausa = false;
 
 void cc::controlador_solo::tarefa_controle(void* pv_args) {
   while (1) {

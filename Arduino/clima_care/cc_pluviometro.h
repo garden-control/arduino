@@ -14,7 +14,7 @@ namespace cc {
         
         void iniciar() override;
     public:
-        static float indice();
+        static float indice_mm();
     };
 };
 

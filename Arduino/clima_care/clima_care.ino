@@ -4,6 +4,7 @@
 #include "cc_util.h"
 #include "cc_sens_dht.h"
 #include "cc_sens_solo.h"
+#include "cc_pluviometro.h"
 #include <list>
 
 cc::terminal term_serial(Serial);
@@ -27,7 +28,7 @@ void loop() {
     cc::sens_dht::temperatura(),
     cc::sens_dht::umidade(),
     cc::sens_solo::umidade(),
-    0.0f //fazer...
+    cc::pluv::indice_mm() //fazer...
   });
   cc::sens_solo::desliga();
   if (cc::wifi::conectado()) {
@@ -52,5 +53,5 @@ void loop() {
       }
     }
   }
-  delay(30000);
+  delay(10 * 1000);
 }
