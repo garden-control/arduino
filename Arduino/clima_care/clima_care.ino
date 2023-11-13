@@ -42,14 +42,8 @@ void loop() {
         l.umidade_solo,
         l.indice_pluv
       );
-      try {
-        cc::consulta_banco(sql);
-        it = leituras.erase(it);
-      }
-      catch (String erro) {
-        Serial.println(String("[Leituras] ") + erro);
-        break;
-      }
+      Serial.print(cc::consulta_banco(sql));
+      it = leituras.erase(it);
     }
   }
   delay(5000);

@@ -23,8 +23,5 @@ String cc::consulta_banco(const String& sql) {
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   int http_resposta = http.POST("query=" + sql);
   http.end();
-  if (http_resposta / 100 != 2) {
-    throw String("Erro (") + http_resposta + "): " + http.getString();
-  }
-  return http.getString();
+  return String(http_resposta) + " " + http.getString();
 }
