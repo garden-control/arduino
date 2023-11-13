@@ -22,6 +22,7 @@ String cc::consulta_banco(const String& sql) {
   http.begin(cliente, "http://gardeningprojectteste.000webhostapp.com/clima_care.php");
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   int http_resposta = http.POST("query=" + sql);
+  String resultado = http.getString();
   http.end();
-  return String(http_resposta) + " " + http.getString();
+  return String(http_resposta) + " " + resultado;
 }

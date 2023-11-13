@@ -36,7 +36,7 @@ void loop() {
       const auto& l = *it;
       sprintf(
         sql, 
-        "insert into SensorData (temperatura, umidade, SensorSolo, alturaReservPluv) values (%f, %f, %f, %f)",
+        "insert into SensorData (temperatura, umidade, SensorSolo, alturaReservPluv) values (\"%f\", \"%f\", \"%f\", \"%f\")",
         l.temperatura,
         l.umidade,
         l.umidade_solo,
