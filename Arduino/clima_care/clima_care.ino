@@ -43,6 +43,7 @@ void loop() {
       );
       cc::consulta_banco(sql);
     }
+    leituras.clear();
   }
   delay(30000);
 }
