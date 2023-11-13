@@ -17,13 +17,13 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
       sens_solo::liga(10);
       sens_reserv::liga(10);
       if (sens_solo::umidade() < f_umidade_min && !sens_reserv::vazio()) {
-        consulta_banco("UPDATE SensorReservatorio set EstadoBomba = 1, SituacaoReservatorio = 1");
+        consulta_banco("Insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (1, 1)");
         digitalWrite(PIN::LIGA_BOMBA, HIGH);
         bool situacao_reservatorio = true;
         while (!pausa && sens_solo::umidade() < f_umidade_max && (situacao_reservatorio = !sens_reserv::vazio())) {
           delay(10);
         }
-        consulta_banco("UPDATE SensorReservatorio set EstadoBomba = 0, SituacaoReservatorio = " + (situacao_reservatorio ? '0' : '1'));
+        consulta_banco("INSERT INTO SensorReservatorio (EstadoBomba, SituacaoReservatorio) VALUES (0, " + String(situacao_reservatorio ? '0' : '1') + ")");
         digitalWrite(PIN::LIGA_BOMBA, LOW);
       }
       sens_solo::desliga();
