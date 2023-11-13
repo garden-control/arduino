@@ -17,7 +17,7 @@ void setup() {
 }
 
 struct leitura {
-  float temperatura, umidade, indice_calor, umidade_solo;
+  float temperatura, umidade, umidade_solo, indice_pluv;
 };
 std::list<leitura> leituras;
 void loop() {
@@ -26,8 +26,8 @@ void loop() {
   leituras.push_back({
     cc::sens_dht::temperatura(),
     cc::sens_dht::umidade(),
-    cc::sens_dht::indice_calor(),
-    cc::sens_solo::umidade()
+    cc::sens_solo::umidade(),
+    0.0f //fazer...
   });
   cc::sens_solo::desliga();
   if (cc::wifi::conectado()) {
@@ -35,10 +35,11 @@ void loop() {
     for (auto l : leituras) {
       sprintf(
         sql, 
-        "insert into SensorData (temperatura, umidade, SensorSolo) values (%.2f, %.2f, %.2f, %.2f)",
+        "insert into SensorData (temperatura, umidade, SensorSolo, alturaReservPluv) values (%.2f, %.2f, %.2f, %.2f)",
         l.temperatura,
         l.umidade,
-        l.umidade_solo
+        l.umidade_solo,
+        l.indice_pluv
       );
       cc::consulta_banco(sql);
     }
