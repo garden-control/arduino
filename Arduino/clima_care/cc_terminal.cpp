@@ -11,20 +11,6 @@
 
 const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
 ).cmd(
-  "sql",
-  "Teste de sql",
-  [](const cc::terminal::params& args) -> cc::terminal::retorno {
-    String resposta;
-    int http_codigo = cc::consulta_banco(
-      "insert into SensorData (localizacao, umidade, temperatura, indice_calor, SensorSolo) values"
-      "(\"sala\", \"37%\", \"36C\", \"sla\", \"umido\")",
-      &resposta
-    );
-    args.stream.println(String("retorno: ") + http_codigo);
-    args.stream.println("resposta: " + resposta);
-    return {};
-  }
-).cmd(
   "ctrl",
   "Inicia/pausa controle",
   [](const cc::terminal::params& args) -> cc::terminal::retorno {
