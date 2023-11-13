@@ -4,7 +4,7 @@
 
 namespace cc {
   String espera_linha(Stream& stream);
-  int consulta_banco(const String& expressao_sql, String* resposta = nullptr);
+  String consulta_banco(const String& sql);
 };
 
 #endif

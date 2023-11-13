@@ -32,18 +32,25 @@ void loop() {
   cc::sens_solo::desliga();
   if (cc::wifi::conectado()) {
     char sql[512];
-    for (auto l : leituras) {
+    for (auto it = leituras.begin(); it != leituras.end(); ) {
+      const auto& l = *it;
       sprintf(
         sql, 
-        "insert into SensorData (temperatura, umidade, SensorSolo, alturaReservPluv) values (%.2f, %.2f, %.2f, %.2f)",
+        "insert into SensorData (temperatura, umidade, SensorSolo, alturaReservPluv) values (%f, %f, %f, %f)",
         l.temperatura,
         l.umidade,
         l.umidade_solo,
         l.indice_pluv
       );
-      cc::consulta_banco(sql);
+      try {
+        cc::consulta_banco(sql);
+        it = leituras.erase(it);
+      }
+      catch (String erro) {
+        Serial.println(String("[Leituras] ") + erro);
+        break;
+      }
     }
-    leituras.clear();
   }
-  delay(30000);
+  delay(5000);
 }

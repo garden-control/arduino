@@ -16,15 +16,15 @@ String cc::espera_linha(Stream& stream) {
   return linha;
 }
 
-int cc::consulta_banco(const String& expressao_sql, String* resposta) {
+String cc::consulta_banco(const String& sql) {
   WiFiClient cliente;
   HTTPClient http;
   http.begin(cliente, "http://gardeningprojectteste.000webhostapp.com/clima_care.php");
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-  int http_codigo_resposta = http.POST("query=" + expressao_sql);
-  if (resposta) {
-    *resposta = http.getString();
-  }
+  int http_resposta = http.POST("query=" + sql);
   http.end();
-  return http_codigo_resposta;
+  if (http_resposta / 100 != 2) {
+    throw String("Erro (") + http_resposta + "): " + http.getString();
+  }
+  return http.getString();
 }
