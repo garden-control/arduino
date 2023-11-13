@@ -17,15 +17,24 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
       sens_solo::liga(10);
       sens_reserv::liga(10);
       if (sens_solo::umidade() < f_umidade_min && !sens_reserv::vazio()) {
-
-        consulta_banco("insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (1, 1)");
+        try {
+          consulta_banco("insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (1, 1)");
+        }
+        catch (String erro) {
+          //Serial.println(String("[Controlador] ") + erro);
+        }
         digitalWrite(PIN::LIGA_BOMBA, HIGH);
         bool situacao_reservatorio = true;
         while (!pausa && sens_solo::umidade() < f_umidade_max && (situacao_reservatorio = !sens_reserv::vazio())) {
           delay(10);
         }
         digitalWrite(PIN::LIGA_BOMBA, LOW);
-        consulta_banco(String("insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (0, ") + (situacao_reservatorio ? '0' : '1') + ')');
+        try {
+          consulta_banco(String("insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (0, ") + (situacao_reservatorio ? '0' : '1') + ')');
+        }
+        catch (String erro) {
+          //Serial.println(String("[Controlador] ") + erro);
+        }
       }
       sens_solo::desliga();
       sens_reserv::desliga();

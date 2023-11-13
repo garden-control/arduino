@@ -2,6 +2,7 @@
 #define CC_SENS_RESERV_H
 #include "cc_inicializacao.h"
 #include "cc_terminal.h"
+#include "cc_mutex.h"
 
 namespace cc {
   class sens_reserv : inicializavel {
@@ -12,6 +13,7 @@ namespace cc {
 
     static float f_valor;
     static char ligado;
+    static cc::mutex mtx_ligado;
 
     static sens_reserv unico;
     sens_reserv() = default;

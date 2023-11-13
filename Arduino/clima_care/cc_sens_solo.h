@@ -2,6 +2,7 @@
 #define CC_SENS_SOLO_H
 #include "cc_inicializacao.h"
 #include "cc_terminal.h"
+#include "cc_mutex.h"
 
 namespace cc {
   class sens_solo : inicializavel {
@@ -11,6 +12,7 @@ namespace cc {
 
     static float f_umidade;                //valor filtrado
     static char ligado;
+    static cc::mutex mtx_ligado;
 
     static sens_solo unico;
     sens_solo() = default;

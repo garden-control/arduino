@@ -4,6 +4,7 @@
 
 float cc::sens_solo::f_umidade = 0.0f;
 char cc::sens_solo::ligado = 0;
+cc::mutex cc::sens_solo::mtx_ligado;
 
 cc::sens_solo cc::sens_solo::unico;
 void cc::sens_solo::iniciar() {
@@ -15,12 +16,16 @@ float cc::sens_solo::umidade() {
   return 1.0f - f_umidade;
 }
 void cc::sens_solo::liga(int espera_n_amostras) {
+  mtx_ligado.capturar();
   ligado++;
+  mtx_ligado.liberar();
   if (espera_n_amostras)
     delay(espera_n_amostras * dt);
 }
 void cc::sens_solo::desliga() {
+  mtx_ligado.capturar();
   ligado -= (ligado > 0);
+  mtx_ligado.liberar();
 }
 cc::terminal::retorno cc::sens_solo::comandos(const cc::terminal::params& args) {
   static const terminal::map_str_cmd cmds = terminal::map_aux(

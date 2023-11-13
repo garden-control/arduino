@@ -36,15 +36,21 @@ void loop() {
       const auto& l = *it;
       sprintf(
         sql, 
-        "insert into SensorData (localizacao, temperatura, umidade, SensorSolo, alturaReservPluv) values (\"Sala\", \"%f\", \"%f\", \"%f\", \"%f\")",
+        "insert into SensorData (localizacao, temperatura, umidade, SensorSolo, alturaReservPluv) values (\"Sala\", \"%.2f\", \"%.2f\", \"%.2f\", \"%.2f\")",
         l.temperatura,
         l.umidade,
-        l.umidade_solo,
+        l.umidade_solo * 100.0f,
         l.indice_pluv
       );
-      cc::consulta_banco(sql);
-      it = leituras.erase(it);
+      try {
+        cc::consulta_banco(sql);
+        it = leituras.erase(it);
+      }
+      catch (String erro) {
+        //Serial.println(String("[Envio de leituras] ") + erro);
+        break;
+      }
     }
   }
-  delay(5000);
+  delay(30000);
 }

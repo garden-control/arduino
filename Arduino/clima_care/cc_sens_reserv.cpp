@@ -3,7 +3,10 @@
 #include <Arduino.h>
 
 float cc::sens_reserv::f_valor = 0.0f;
+
 char cc::sens_reserv::ligado = 0;
+cc::mutex cc::sens_reserv::mtx_ligado;
+
 cc::sens_reserv cc::sens_reserv::unico;
 
 void cc::sens_reserv::iniciar() {
@@ -15,12 +18,16 @@ bool cc::sens_reserv::vazio() {
   return f_valor > gatilho;
 }
 void cc::sens_reserv::liga(int espera_n_amostras) {
+  mtx_ligado.capturar();
   ligado++;
+  mtx_ligado.liberar();
   if (espera_n_amostras)
     delay(espera_n_amostras * dt);
 }
 void cc::sens_reserv::desliga() {
+  mtx_ligado.capturar();
   ligado -= (ligado > 0);
+  mtx_ligado.liberar();
 }
 void cc::sens_reserv::tarefa_leitura(void* pv_args) {
   while (1) {

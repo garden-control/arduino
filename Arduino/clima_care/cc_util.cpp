@@ -24,5 +24,8 @@ String cc::consulta_banco(const String& sql) {
   int http_resposta = http.POST("query=" + sql);
   String resultado = http.getString();
   http.end();
-  return String(http_resposta) + " " + resultado;
+  if (http_resposta / 100 != 2) {
+    throw String("Erro (") + http_resposta + "): " + resultado;
+  }
+  return resultado;
 }
