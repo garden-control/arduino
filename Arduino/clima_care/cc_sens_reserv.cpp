@@ -2,6 +2,8 @@
 #include "cc_pins.h"
 #include <Arduino.h>
 
+float cc::sens_reserv::gatilho = 0.45f; //acima desse valor, o reservatorio esta vazio 
+
 float cc::sens_reserv::f_valor = 0.0f;
 
 char cc::sens_reserv::ligado = 0;
@@ -16,6 +18,9 @@ void cc::sens_reserv::iniciar() {
 }
 bool cc::sens_reserv::vazio() {
   return f_valor > gatilho;
+}
+float cc::sens_reserv::valor() {
+  return f_valor;
 }
 void cc::sens_reserv::liga(int espera_n_amostras) {
   mtx_ligado.capturar();

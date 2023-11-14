@@ -5,13 +5,16 @@
 #include "cc_sens_dht.h"
 #include "cc_sens_solo.h"
 #include "cc_pluviometro.h"
+#include <BluetoothSerial.h>
 #include <list>
 
-cc::terminal term_serial(Serial);
+BluetoothSerial SerialBT;
+cc::terminal term_serial(SerialBT);
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  //Serial.begin(115200);
+  SerialBT.begin("ClimaCare");
   delay(2000);
 
   cc::iniciar();
@@ -21,6 +24,7 @@ struct leitura {
   float temperatura, umidade, umidade_solo, indice_pluv;
 };
 std::list<leitura> leituras;
+long long int tp1 = 0, tp2 = 0;
 void loop() {
   // put your main code here, to run repeatedly:
   cc::sens_solo::liga(10);
@@ -53,5 +57,7 @@ void loop() {
       }
     }
   }
-  delay(10 * 1000);
+  tp2 = millis();
+  delay(5 * 1000 - (tp2 - tp1));
+  tp1 = millis();
 }

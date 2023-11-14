@@ -12,19 +12,74 @@
 const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
 ).cmd(
   "ctrl",
-  "Inicia/pausa controle",
+  "Acesso as configuracoes de controle",
   [](const cc::terminal::params& args) -> cc::terminal::retorno {
-    cc::controlador_solo::pausa = !cc::controlador_solo::pausa;
-    Serial.println(!cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
-    return {};
+    static cc::terminal::map_str_cmd sub = cc::terminal::map_aux(
+    ).cmd(
+      "liga",
+      "Liga/desliga controlador",
+      [](const cc::terminal::params& args) -> cc::terminal::retorno {
+        cc::controlador_solo::pausa = !cc::controlador_solo::pausa;
+        args.stream.println(!cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
+        return {};
+      }
+    ).cmd(
+      "status",
+      "Checa status de controle",
+        [](const cc::terminal::params& args) -> cc::terminal::retorno {
+          args.stream.println(!cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
+          
+          cc::sens_reserv::liga(10);
+          args.stream.println(cc::sens_reserv::vazio() ? "Reservatorio vazio" : "Reservatorio ok");
+          cc::sens_reserv::desliga();
+          
+          args.stream.print("Umidade do solo:\n  Atual: ");
+          cc::sens_solo::liga(10);
+          args.stream.println(cc::sens_solo::umidade());
+          cc::sens_solo::desliga();
+
+          args.stream.print("  Minima: ");
+          args.stream.println(cc::controlador_solo::f_umidade_min);
+          
+          args.stream.print("  Maxima: ");
+          args.stream.println(cc::controlador_solo::f_umidade_max);
+          return {};
+        }
+    ).cmd(
+      "min",
+      "Configura a umidade minima",
+      [](const cc::terminal::params& args) -> cc::terminal::retorno {
+        args.stream.println("Digite um valor entre 0 e 1...");
+        float min = args.stream.parseFloat();
+        if (min >= 0.0f && min < 1.0f) {
+          cc::controlador_solo::f_umidade_min = min;
+          args.stream.print("Umidade minima configurada para ");
+          args.stream.println(min);
+        }
+        else {
+          args.stream.println("Entrada invalida");
+        }
+        return {};
+      }
+    ).cmd(
+      "max",
+      "Configura a umidade maxima",
+      [](const cc::terminal::params& args) -> cc::terminal::retorno {
+        args.stream.println("Digite um valor entre 0 e 1...");
+        float max = args.stream.parseFloat();
+        if (max >= 0.0f && max < 1.0f) {
+          cc::controlador_solo::f_umidade_max = max;
+          args.stream.print("Umidade maxima configurada para ");
+          args.stream.println(max);
+        }
+        else {
+          args.stream.println("Entrada invalida");
+        }
+        return {};
+      }
+    );
+    return cc::terminal::executar(args.rotulo, args.entrada, args.stream, sub);
   }
-).cmd(
-  "ctrl_status",
-  "Checa status de controle",
-    [](const cc::terminal::params& args) -> cc::terminal::retorno {
-      Serial.println(!cc::controlador_solo::pausa ? "Controle ligado" : "Controle desligado");
-      return {};
-    }
 ).cmd(
   "wifi",
   "Acesso as opcoes de wifi",
@@ -36,21 +91,70 @@ const cc::terminal::map_str_cmd cc::terminal::raiz = cc::terminal::map_aux(
     static const cc::terminal::map_str_cmd cmds = cc::terminal::map_aux(
     ).cmd(
       "solo",
-      "Acesso as configuracoes do sensor de solo",
-      cc::sens_solo::comandos
-    ).cmd(
-      "resev",
-      "Exibe status do reservatorio",
+      "Acesso as opcoes do sensor de solo",
       [](const cc::terminal::params& args) -> cc::terminal::retorno {
-        cc::sens_reserv::liga(10);
-        args.stream.print(cc::sens_reserv::vazio() ? "Vazio\n" : "Cheio\n");
-        cc::sens_reserv::desliga();
-        return {};
+        static const terminal::map_str_cmd cmds = terminal::map_aux(
+        ).cmd(
+          "plot",
+          "Exibe as leituras do sensor",
+          [](const terminal::params& args) -> terminal::retorno {
+            args.stream.println("Digite qualquer coisa para sair...");
+            cc::sens_solo::liga();
+            while (!args.stream.available()) {
+              args.stream.println(cc::sens_solo::umidade());
+              delay(100);
+            }
+            cc::sens_solo::desliga();
+            while (args.stream.available()) {
+              args.stream.read();
+              delay(10);
+            }
+            return {};
+          }
+        );
+        return terminal::executar(args.rotulo, args.entrada, args.stream, cmds);
       }
     ).cmd(
-      "reserv_plot",
-      "Plota leitura do sensor do reservatorio",
-      cc::sens_reserv::plot
+      "reserv",
+      "Acesso as configuracoes do sensor do reservatorio",
+      [](const cc::terminal::params& args) -> cc::terminal::retorno {
+        static const terminal::map_str_cmd cmds = terminal::map_aux(
+        ).cmd(
+          "status",
+          "Informa status do reservatorio",
+          [](const cc::terminal::params& args) -> cc::terminal::retorno {
+            args.stream.print("Gatilho: ");
+            args.stream.println(cc::sens_reserv::gatilho);
+            cc::sens_reserv::liga(10);
+            args.stream.print("Valor: ");
+            args.stream.println(cc::sens_reserv::valor());
+            args.stream.print(cc::sens_reserv::vazio() ? "Vazio\n" : "Cheio\n");
+            cc::sens_reserv::desliga();
+            return {};
+          }
+        ).cmd(
+          "plot",
+          "Plota leitura do sensor do reservatorio",
+          cc::sens_reserv::plot
+        ).cmd(
+          "def",
+          "Configura gatilho para deteccao de agua",
+          [](const cc::terminal::params& args) -> cc::terminal::retorno {
+            args.stream.println("Digite um valor entre 0 (cheio) e 1 (vazio)...");
+            float gatilho = args.stream.parseFloat();
+            if (gatilho > 0.0f && gatilho < 1.0f) {
+              cc::sens_reserv::gatilho = gatilho;
+              args.stream.print("Gatilho configurado para ");
+              args.stream.println(gatilho);
+            }
+            else {
+              args.stream.println("Entrada invalida");
+            }
+            return {};
+          }
+        );
+        return terminal::executar(args.rotulo, args.entrada, args.stream, cmds);
+      }
     );
     return cc::terminal::executar(args.rotulo, args.entrada, args.stream, cmds);
   }
