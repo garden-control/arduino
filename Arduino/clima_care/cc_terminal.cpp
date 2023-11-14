@@ -232,7 +232,7 @@ cc::terminal::retorno cc::terminal::executar(
     else if (identificador == "inicio")
       return retorno(retorno::INICIO);
     else 
-      stream.printf("Comando \"%s\" desconhecido.\n\n", identificador.c_str());
+      stream.printf("Comando \"%s\" desconhecido.\nDigite \"ajuda\" para ver os comandos disponiveis.\n\n", identificador.c_str());
     delay(10);
   }
   return {};
