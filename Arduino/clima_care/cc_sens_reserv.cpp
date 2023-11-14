@@ -17,7 +17,8 @@ void cc::sens_reserv::iniciar() {
   xTaskCreate(tarefa_leitura, "leitura_sens_reserv", 2048, nullptr, 1, nullptr);
 }
 bool cc::sens_reserv::vazio() {
-  return f_valor > gatilho;
+  //return f_valor > gatilho;
+  return false;
 }
 float cc::sens_reserv::valor() {
   return f_valor;

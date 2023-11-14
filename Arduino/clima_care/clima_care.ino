@@ -47,11 +47,10 @@ void loop() {
         l.umidade_solo * 100.0f,
         l.indice_pluv
       );
-      try {
-        cc::consulta_banco(sql);
+      if (cc::consulta_banco(sql)) {
         it = leituras.erase(it);
       }
-      catch (String erro) {
+      else {
         //Serial.println(String("[Envio de leituras] ") + erro);
         break;
       }
