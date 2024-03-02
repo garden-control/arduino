@@ -57,6 +57,6 @@ void loop() {
     }
   }
   tp2 = millis();
-  delay(5 * 1000 - (tp2 - tp1));
+  delay(max(0LL, 5 * 1000 - (tp2 - tp1)));
   tp1 = millis();
 }
