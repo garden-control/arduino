@@ -2,7 +2,7 @@
 #define CC_TERMINAL_H
 #include <Stream.h>
 #include <StreamString.h>
-#include <String.h>
+#include <Arduino.h>
 #include <unordered_map>
 #include <string> //para usar como chave em unordered_map
 #include <functional>

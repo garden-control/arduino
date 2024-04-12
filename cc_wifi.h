@@ -1,7 +1,7 @@
 #ifndef CC_WIFI_H
 #define CC_WIFI_H
 #include "cc_mutex.h"
-#include <String.h>
+#include <Arduino.h>
 #include "cc_terminal.h"
 #include "cc_inicializacao.h"
 
