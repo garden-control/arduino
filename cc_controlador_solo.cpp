@@ -4,6 +4,7 @@
 #include "cc_sens_solo.h"
 #include "cc_sens_reserv.h"
 #include "cc_util.h"
+#include "cc_clino.h"
 
 cc::controlador_solo cc::controlador_solo::unico;
 float cc::controlador_solo::f_umidade_max = 0.55f;
@@ -41,4 +42,38 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
 void cc::controlador_solo::iniciar() {
   pinMode(PIN::LIGA_BOMBA, OUTPUT);
   xTaskCreate(tarefa_controle, "controle_solo", 2048, nullptr, 1, nullptr);
+
+  Clino::comandos.emplace("ctrlPausar", Clino::Comando(clinoPausar, nullptr, "Pausa/inicia o controlador"));
+  Clino::comandos.emplace("ctrlStatus", Clino::Comando(clinoStatus, nullptr, "Checa o stauts do controlador"));
+  Clino::comandos.emplace("ctrlSetMin", Clino::Comando(clinoSetMin, nullptr, "Configura a umidade mínima permitida"));
+  Clino::comandos.emplace("ctrlSetMax", Clino::Comando(clinoSetMax, nullptr, "Configura a umidade máxima permitida"));
+}
+
+String cc::controlador_solo::clinoPausar(StreamString& entrada, void* pv_args)
+{
+  pausa = !pausa;
+  return cc::Json()
+    .add("pausa", pausa)
+    .toString();
+}
+String cc::controlador_solo::clinoStatus(StreamString& entrada, void* pv_args)
+{
+  cc::sens_solo::liga(10);
+  float umidade = cc::sens_solo::umidade();
+  cc::sens_solo::desliga();
+  return cc::Json()
+    .add("pausa", pausa)
+    .add("reservatorio", !cc::sens_reserv::vazio())
+    .add("umidade", umidade)
+    .add("minima", f_umidade_min)
+    .add("maxima", f_umidade_max)
+    .toString();
+}
+String cc::controlador_solo::clinoSetMin(StreamString& entrada, void* pv_args)
+{
+  return "";
+}
+String cc::controlador_solo::clinoSetMax(StreamString& entrada, void* pv_args)
+{
+  return "";
 }

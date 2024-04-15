@@ -2,6 +2,47 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
+cc::Json& cc::Json::add(const String& nome, const String& str)
+{
+  if (!json.isEmpty()) json += ',';
+  json += '"' + nome + "\": \"" + str + '"';
+  return *this;
+}
+cc::Json& cc::Json::add(const String& nome, const char* str)
+{
+  if (!json.isEmpty()) json += ',';
+  json += '"' + nome + "\": \"" + str + '"';
+  return *this;
+}
+cc::Json& cc::Json::add(const String& nome, int n)
+{
+  if (!json.isEmpty()) json += ',';
+  json += '"' + nome + "\": " + n;
+  return *this;
+}
+cc::Json& cc::Json::add(const String& nome, float f)
+{
+  if (!json.isEmpty()) json += ',';
+  json += '"' + nome + "\": " + f;
+  return *this;
+}
+cc::Json& cc::Json::add(const String& nome, bool b)
+{
+  if (!json.isEmpty()) json += ',';
+  json += '"' + nome + "\": " + (b ? "true" : "false");
+  return *this;
+}
+cc::Json& cc::Json::add(const String& nome, const Json& _json)
+{
+  if (!json.isEmpty()) json += ',';
+  json += '"' + nome + "\": " + _json.toString();
+  return *this;
+}
+String cc::Json::toString() const
+{
+  return '{' + json + '}';
+}
+
 String cc::espera_linha(Stream& stream) {
   String linha;
   while (!stream.available()) delay(10);
