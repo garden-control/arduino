@@ -2,7 +2,6 @@
 #define CC_WIFI_H
 #include "cc_mutex.h"
 #include <Arduino.h>
-#include "cc_terminal.h"
 #include "cc_inicializacao.h"
 
 namespace cc {
@@ -19,7 +18,6 @@ namespace cc {
     void iniciar() override;
   
   public:
-    static terminal::retorno comandos(const terminal::params& args);
     static bool conectado();
   };
 };

@@ -27,28 +27,7 @@ void cc::sens_solo::desliga() {
   ligado -= (ligado > 0);
   mtx_ligado.liberar();
 }
-cc::terminal::retorno cc::sens_solo::comandos(const cc::terminal::params& args) {
-  static const terminal::map_str_cmd cmds = terminal::map_aux(
-  ).cmd(
-    "plot",
-    "Exibe as leituras do sensor",
-    [](const terminal::params& args) -> terminal::retorno {
-      args.stream.println("Digite qualquer coisa para sair...");
-      liga();
-      while (!args.stream.available()) {
-        args.stream.println(umidade());
-        delay(100);
-      }
-      desliga();
-      while (args.stream.available()) {
-        args.stream.read();
-        delay(10);
-      }
-      return {};
-    }
-  );
-  return terminal::executar(args.rotulo, args.entrada, args.stream, cmds);
-}
+
 void cc::sens_solo::tarefa_leitura(void* pv_args) {
   while (1) {
     while (!ligado) delay(10);

@@ -1,5 +1,4 @@
 #include "cc_inicializacao.h"
-#include "cc_terminal.h"
 #include "cc_wifi.h"
 #include "cc_util.h"
 #include "cc_sens_dht.h"
@@ -9,12 +8,11 @@
 #include <list>
 
 BluetoothSerial SerialBT;
-cc::terminal term_serial(SerialBT);
 
 void setup() {
   // put your setup code here, to run once:
-  //Serial.begin(115200);
-  SerialBT.begin("ClimaCare");
+  Serial.begin(115200);
+  //SerialBT.begin("ClimaCare");
   delay(2000);
 
   cc::iniciar();
@@ -47,13 +45,7 @@ void loop() {
         l.umidade_solo * 100.0f,
         l.indice_pluv
       );
-      if (cc::consulta_banco(sql)) {
-        it = leituras.erase(it);
-      }
-      else {
-        //Serial.println(String("[Envio de leituras] ") + erro);
-        break;
-      }
+      // enviar dados
     }
   }
   tp2 = millis();

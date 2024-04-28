@@ -17,8 +17,9 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
       sens_solo::liga(10);
       sens_reserv::liga(10);
       if (sens_solo::umidade() < f_umidade_min && !sens_reserv::vazio()) {
-        consulta_banco("insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (1, 1)");
-        //Serial.println(String("[Controlador] ") + erro);
+
+        //atualizar status
+
         digitalWrite(PIN::LIGA_BOMBA, HIGH);
         bool situacao_reservatorio = true;
         while (!pausa && sens_solo::umidade() < f_umidade_max && (situacao_reservatorio = !sens_reserv::vazio())) {
@@ -26,8 +27,7 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
         }
         digitalWrite(PIN::LIGA_BOMBA, LOW);
         
-        consulta_banco(String("insert into SensorReservatorio (EstadoBomba, SituacaoReservatorio) values (0, ") + (situacao_reservatorio ? '1' : '0') + ')');
-        //Serial.println(String("[Controlador] ") + erro);
+        //atualizar status
       }
       sens_solo::desliga();
       sens_reserv::desliga();

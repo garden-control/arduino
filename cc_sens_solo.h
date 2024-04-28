@@ -1,7 +1,6 @@
 #ifndef CC_SENS_SOLO_H
 #define CC_SENS_SOLO_H
 #include "cc_inicializacao.h"
-#include "cc_terminal.h"
 #include "cc_mutex.h"
 
 namespace cc {
@@ -22,7 +21,6 @@ namespace cc {
     static void liga(int espera_n_amostras = 0);
     static void desliga();
 
-    static terminal::retorno comandos(const cc::terminal::params& args);
   private:
     static void tarefa_leitura(void* pv_args);
   };
