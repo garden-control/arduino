@@ -1,7 +1,5 @@
 #include "cc_mutex.h"
 
-cc::mutex cc::mtx_spiffs;
-
 void cc::mutex::capturar() {
   if (!mtx) {
     mtx = xSemaphoreCreateMutex();
