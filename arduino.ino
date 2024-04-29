@@ -1,21 +1,13 @@
 #include "cc_Modulo.h"
 #include "cc_wifi.h"
-#include "cc_util.h"
 #include "cc_sens_dht.h"
 #include "cc_sens_solo.h"
 #include "cc_pluviometro.h"
-#include <BluetoothSerial.h>
 #include <list>
 
-BluetoothSerial SerialBT;
 
 void setup()
 {
-    // put your setup code here, to run once:
-    Serial.begin(115200);
-    // SerialBT.begin("ClimaCare");
-    delay(2000);
-
     cc::iniciarModulos();
 }
 
@@ -27,7 +19,6 @@ std::list<leitura> leituras;
 long long int tp1 = 0, tp2 = 0;
 
 #include "cc_ClimaFire.h"
-#include "cc_util.h"
 void callback(AsyncResult& result);
 
 void loop()
