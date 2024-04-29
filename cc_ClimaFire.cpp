@@ -7,10 +7,12 @@ cc::ClimaFire cc::ClimaFire::unico;
 
 cc::ClimaFire::ClimaFire()
     :
+    userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
     asyncClient(sslClient, getNetwork(defaultNetwork)),
-    userAuth(apiKey, usuarioEmail, usuarioSenha, 3000)
+    asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
 {
     sslClient.setInsecure();
+    sslClientGet.setInsecure();
 }
 
 void cc::ClimaFire::iniciar()
@@ -73,4 +75,9 @@ void cc::ClimaFire::firebaseCallback(AsyncResult& result)
 bool cc::ClimaFire::pronto()
 {
     return unico.firebaseApp.ready();
+}
+
+void cc::ClimaFire::get(const String& caminho, FirebaseClientCallback callback)
+{
+    unico.database.get(unico.asyncClientGet, caminho, callback, true);
 }

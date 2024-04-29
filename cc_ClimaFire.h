@@ -5,6 +5,8 @@
 #include <FirebaseClient.h>
 #include "cc_credenciais.h"
 
+typedef void (*FirebaseClientCallback)(AsyncResult&);
+
 namespace cc
 {
     class ClimaFire : inicializavel
@@ -17,13 +19,17 @@ namespace cc
 
         static ClimaFire unico;
 
-        WiFiClientSecure sslClient;
         DefaultNetwork defaultNetwork;
-        AsyncClientClass asyncClient;
+
         UserAuth userAuth;
+
         FirebaseApp firebaseApp;
+        WiFiClientSecure sslClient;
+        AsyncClientClass asyncClient;
 
         RealtimeDatabase database;
+        WiFiClientSecure sslClientGet;
+        AsyncClientClass asyncClientGet;
 
         ClimaFire();
 
@@ -42,6 +48,8 @@ namespace cc
         {
             unico.database.set(unico.asyncClient, caminho, val, firebaseCallback);
         }
+
+        static void get(const String& caminho, FirebaseClientCallback callback);
     };
 }
 
