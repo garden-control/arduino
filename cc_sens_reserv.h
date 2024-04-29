@@ -1,10 +1,10 @@
 #ifndef CC_SENS_RESERV_H
 #define CC_SENS_RESERV_H
-#include "cc_inicializacao.h"
+#include "cc_Modulo.h"
 #include "cc_mutex.h"
 
 namespace cc {
-  class sens_reserv : inicializavel {
+  class sens_reserv : Modulo {
   private:
     static constexpr float    peso    = 0.8f;   //peso do filtro
     static constexpr unsigned dt      = 100 ;   //intervalo de tempo entre amostras (ms)
@@ -16,8 +16,8 @@ namespace cc {
     static cc::mutex mtx_ligado;
 
     static sens_reserv unico;
-    sens_reserv() = default;
-    void iniciar() override;
+    sens_reserv();
+    void aoIniciar() override;
   public:
     static bool vazio();
     static float valor();

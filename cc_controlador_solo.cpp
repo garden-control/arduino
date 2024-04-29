@@ -10,6 +10,12 @@ float cc::controlador_solo::f_umidade_max = 0.55f;
 float cc::controlador_solo::f_umidade_min = 0.4f;
 bool cc::controlador_solo::pausa = true;
 
+cc::controlador_solo::controlador_solo()
+    :Modulo("controlador_solo", {"Serial"})
+{
+
+}
+
 void cc::controlador_solo::tarefa_controle(void* pv_args) {
   while (1) {
     while (pausa) delay(10);
@@ -38,7 +44,7 @@ void cc::controlador_solo::tarefa_controle(void* pv_args) {
   }
 }
 
-void cc::controlador_solo::iniciar() {
+void cc::controlador_solo::aoIniciar() {
   pinMode(PIN::LIGA_BOMBA, OUTPUT);
   xTaskCreate(tarefa_controle, "controle_solo", 2048, nullptr, 1, nullptr);
 }

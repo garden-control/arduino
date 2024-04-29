@@ -4,7 +4,14 @@
 HX711 cc::pluv::sens_carga;
 cc::pluv cc::pluv::unico;
 
-void cc::pluv::iniciar()
+cc::pluv::pluv()
+    :
+    Modulo("pluv")
+{
+
+}
+
+void cc::pluv::aoIniciar()
 {
     sens_carga.begin(PIN::DT, PIN::SCK);
     sens_carga.tare();

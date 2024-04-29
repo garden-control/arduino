@@ -1,9 +1,9 @@
 #ifndef CC_CONTROLADOR_SOLO_H
 #define CC_CONTROLDARO_SOLO_H
-#include "cc_inicializacao.h"
+#include "cc_Modulo.h"
 
 namespace cc {
-  class controlador_solo : inicializavel {
+  class controlador_solo : Modulo {
   public:
     static float f_umidade_max;
     static float f_umidade_min;
@@ -11,8 +11,8 @@ namespace cc {
 
   private:
     static controlador_solo unico;
-    void iniciar() override;
-    controlador_solo() = default;
+    void aoIniciar() override;
+    controlador_solo();
 
     static void tarefa_controle(void* pv_args);
   };

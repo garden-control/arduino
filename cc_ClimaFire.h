@@ -1,6 +1,6 @@
 #ifndef CC_CLIMAFIRE_H
 #define CC_CLIMAFIRE_H
-#include "cc_inicializacao.h"
+#include "cc_Modulo.h"
 #include <WiFiClientSecure.h>
 #include <FirebaseClient.h>
 #include "cc_credenciais.h"
@@ -9,7 +9,7 @@ typedef void (*FirebaseClientCallback)(AsyncResult&);
 
 namespace cc
 {
-    class ClimaFire : inicializavel
+    class ClimaFire : Modulo
     {
         // conta firebase de teste
         static constexpr char* apiKey = "AIzaSyBBjB1jujY5_5UFUAXuteksVzAyGAcgZLU";
@@ -33,7 +33,7 @@ namespace cc
 
         ClimaFire();
 
-        void iniciar() override;
+        void aoIniciar() override;
 
         static void tarefa(void* pvArgs);
         void tarefa();

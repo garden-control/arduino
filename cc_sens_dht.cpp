@@ -4,7 +4,13 @@
 cc::sens_dht cc::sens_dht::unico;
 DHT cc::sens_dht::dht(PIN::SENS_DHT, DHT11);
 
-void cc::sens_dht::iniciar() {
+cc::sens_dht::sens_dht()
+    :
+    Modulo("sens_dht")
+{
+
+}
+void cc::sens_dht::aoIniciar() {
   dht.begin();
 }
 float cc::sens_dht::umidade() {

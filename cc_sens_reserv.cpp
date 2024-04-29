@@ -11,7 +11,12 @@ cc::mutex cc::sens_reserv::mtx_ligado;
 
 cc::sens_reserv cc::sens_reserv::unico;
 
-void cc::sens_reserv::iniciar() {
+cc::sens_reserv::sens_reserv()
+    :Modulo("sens_reserv")
+{
+
+}
+void cc::sens_reserv::aoIniciar() {
   pinMode(PIN::SENS_RESERV, INPUT);
   pinMode(PIN::LIGA_SENS_RESERV, OUTPUT);
   xTaskCreate(tarefa_leitura, "leitura_sens_reserv", 2048, nullptr, 1, nullptr);

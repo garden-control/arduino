@@ -7,7 +7,14 @@ char cc::sens_solo::ligado = 0;
 cc::mutex cc::sens_solo::mtx_ligado;
 
 cc::sens_solo cc::sens_solo::unico;
-void cc::sens_solo::iniciar() {
+
+cc::sens_solo::sens_solo()
+    :
+    Modulo("sens_solo")
+{
+
+}
+void cc::sens_solo::aoIniciar() {
   pinMode(PIN::SENS_SOLO, INPUT);
   pinMode(PIN::LIGA_SENS_SOLO, OUTPUT);
   xTaskCreate(tarefa_leitura, "leitura_sens_solo", 2048, nullptr, 1, nullptr);

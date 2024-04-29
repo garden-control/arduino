@@ -7,6 +7,7 @@ cc::ClimaFire cc::ClimaFire::unico;
 
 cc::ClimaFire::ClimaFire()
     :
+    Modulo("ClimaFire", {"wifi", "Serial"}),
     userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
     asyncClient(sslClient, getNetwork(defaultNetwork)),
     asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
@@ -15,7 +16,7 @@ cc::ClimaFire::ClimaFire()
     sslClientGet.setInsecure();
 }
 
-void cc::ClimaFire::iniciar()
+void cc::ClimaFire::aoIniciar()
 {
     xTaskCreatePinnedToCore(tarefa, "ClimaFire", 8000, this, 3, NULL, 1 /* must be core 1 for network task */); 
 }

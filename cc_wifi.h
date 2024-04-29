@@ -2,10 +2,10 @@
 #define CC_WIFI_H
 #include "cc_mutex.h"
 #include <Arduino.h>
-#include "cc_inicializacao.h"
+#include "cc_Modulo.h"
 
 namespace cc {
-  class wifi : inicializavel {
+  class wifi : Modulo {
   private:
     static constexpr char* caminho = "/wifi.txt";
     
@@ -14,8 +14,8 @@ namespace cc {
     static String ssid;
     static String senha;
 
-    wifi() = default;
-    void iniciar() override;
+    wifi();
+    void aoIniciar() override;
   
   public:
     static bool conectado();
