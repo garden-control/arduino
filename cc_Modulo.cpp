@@ -26,9 +26,9 @@ void cc::Modulo::iniciar()
     if (!bIniciado)
     {
         for (const auto &d : dependencias)
-        {
-            (*pModulos)[d.c_str()]->iniciar();
-        }
+            if ((*pModulos).count(d.c_str()))
+                (*pModulos)[d.c_str()]->iniciar();
+
         aoIniciar();
     }
 }
