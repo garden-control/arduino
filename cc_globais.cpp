@@ -2,7 +2,7 @@
 
 Stream* cc::pDebugStream = &Serial;
 
-#ifdef SERIALBT
+#ifdef USAR_SERIALBT
 BluetoothSerial cc::SerialBT;
 #endif
 
