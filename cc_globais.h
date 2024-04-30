@@ -5,6 +5,7 @@
 //#define USAR_SERIALBT
 #define USAR_SERIAL
 
+#define DEBUG_SERIAL
 
 #include <Arduino.h>
 
@@ -16,8 +17,6 @@
 
 namespace cc
 {
-    extern Stream *pDebugStream;
-
 #ifdef USAR_SERIALBT
     extern BluetoothSerial SerialBT;
 #endif

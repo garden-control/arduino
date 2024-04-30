@@ -9,7 +9,8 @@ class ModuloSpiffs : Modulo
     ModuloSpiffs() :Modulo("Spiffs"){}
     void aoIniciar() override
     {
-        if (!SPIFFS.begin(true) && pDebugStream)
-            pDebugStream->printf("[SPIFFS] Montagem do sistema de arquivos falhou. Memória formatada.\n");
+        #ifdef DEBUG_SERIAL
+        Serial.printf("[SPIFFS] Montagem do sistema de arquivos falhou. Memória formatada.\n");
+        #endif
     }
 };

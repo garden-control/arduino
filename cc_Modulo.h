@@ -11,6 +11,7 @@ namespace cc
         friend void iniciarModulos();
     
     private:
+        const String id;
         std::list<String> dependencias;
         bool bIniciado = false;
 

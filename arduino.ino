@@ -3,8 +3,10 @@
 #include "cc_sens_dht.h"
 #include "cc_sens_solo.h"
 #include "cc_pluviometro.h"
+#include "cc_clino.h"
 #include <list>
 
+cc::Clino cliSerial(Serial, "cliSerial");
 
 void setup()
 {
@@ -17,9 +19,6 @@ struct leitura
 };
 std::list<leitura> leituras;
 long long int tp1 = 0, tp2 = 0;
-
-#include "cc_ClimaFire.h"
-void callback(AsyncResult& result);
 
 void loop()
 {
@@ -53,17 +52,6 @@ void loop()
     delay(max(0LL, 5 * 1000 - (tp2 - tp1)));
     tp1 = millis();
     */
-    cc::ClimaFire::get("teste/stream", callback);
+   delay(1);
 }
 
-void callback(AsyncResult& result)
-{
-    if (result.available())
-    {
-        RealtimeDatabaseResult& rtdb = result.to<RealtimeDatabaseResult>();
-        Firebase.printf("event: \"%s\"\n", rtdb.event().c_str());
-        Firebase.printf("path: \"%s\"\n", rtdb.dataPath().c_str());
-        Firebase.printf("data: \"%s\"\n", rtdb.to<const char *>());
-        Firebase.printf("type: \"%d\"\n", rtdb.type());
-    }
-}

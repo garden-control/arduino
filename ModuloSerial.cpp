@@ -9,6 +9,7 @@ class ModuloSerial : cc::Modulo
     void aoIniciar() override
     {
         Serial.begin(115200);
+        Serial.setTimeout(0);
     }
     static ModuloSerial unico;
 };
