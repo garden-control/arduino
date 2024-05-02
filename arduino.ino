@@ -4,6 +4,7 @@
 #include "cc_sens_solo.h"
 #include "cc_pluviometro.h"
 #include "cc_clino.h"
+#include "cc_globais.h"
 #include <list>
 
 cc::Clino cliSerial(Serial, "cliSerial");
@@ -19,6 +20,8 @@ struct leitura
 };
 std::list<leitura> leituras;
 long long int tp1 = 0, tp2 = 0;
+
+#include "cc_ClimaFire.h"
 
 void loop()
 {
@@ -52,6 +55,10 @@ void loop()
     delay(max(0LL, 5 * 1000 - (tp2 - tp1)));
     tp1 = millis();
     */
-   delay(1);
-}
 
+    static int count = 0;
+    if (cc::ClimaFire::pronto())
+        cc::ClimaFire::set("teste/int", count++);
+
+    delay(10000);
+}

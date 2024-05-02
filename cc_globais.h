@@ -5,7 +5,7 @@
 //#define USAR_SERIALBT
 #define USAR_SERIAL
 
-#define DEBUG_SERIAL
+#define USAR_DEBUG_SERIAL
 
 #include <Arduino.h>
 

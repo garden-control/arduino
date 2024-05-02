@@ -10,8 +10,9 @@ namespace cc
     {
         friend void iniciarModulos();
     
-    private:
+    protected:
         const String id;
+    private:
         std::list<String> dependencias;
         bool bIniciado = false;
 
@@ -22,7 +23,7 @@ namespace cc
         void iniciar();
     
     protected:
-        virtual void aoIniciar() = 0;
+        virtual void aoIniciar() {};
 
         void transmitirEvento(const String& evento);
         virtual void aoReceberEvento(const String& idModulo, const String& evento) {}

@@ -3,6 +3,7 @@
 #include "cc_mutex.h"
 #include <Arduino.h>
 #include "cc_Modulo.h"
+#include <WiFi.h>
 
 namespace cc {
   class wifi : Modulo {
@@ -16,9 +17,10 @@ namespace cc {
 
     wifi();
     void aoIniciar() override;
-  
+    static void aoEventoWifi(WiFiEvent_t evento);
   public:
     static bool conectado();
+    static void configurar(const String& ssid, const String& senha);
   };
 };
 

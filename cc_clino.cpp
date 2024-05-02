@@ -16,7 +16,7 @@ Clino::Clino(Stream& stream, const String& idModulo)
 
 void Clino::aoIniciar()
 {
-    xTaskCreate(tarefa, "", 2048, this, 1, nullptr);
+    xTaskCreate(tarefa, id.c_str(), 8000, this, 1, nullptr);
 }
 
 void Clino::tarefa(void* pv_args)
@@ -45,7 +45,7 @@ void Clino::executar()
             stream.printf("> %s\n", entrada.c_str());
         }
         
-        String identificador = entrada.readString();
+        String identificador = entrada.readStringUntil(' ');
         
         auto it = comandos.find(identificador.c_str());
 
@@ -66,7 +66,7 @@ void Clino::executar()
         }
         else
         {
-            stream.printf("Comando \"%s\" nao existe\n\n", identificador);
+            stream.printf("Comando \"%s\" nao existe\n\n", identificador.c_str());
         }
     }
 }

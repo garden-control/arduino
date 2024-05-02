@@ -8,6 +8,7 @@ cc::ClimaFire cc::ClimaFire::unico;
 cc::ClimaFire::ClimaFire()
     :
     Modulo("ClimaFire", {"wifi", "Serial"}),
+    defaultNetwork(false),
     userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
     asyncClient(sslClient, getNetwork(defaultNetwork)),
     asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
@@ -27,7 +28,7 @@ void cc::ClimaFire::tarefa(void* pvArgs)
 }
 void cc::ClimaFire::tarefa()
 {
-    while (!wifi::conectado()) delay(100);
+    while (!cc::wifi::conectado()) delay(500);
     
     firebaseApp.setCallback(firebaseCallback);
     initializeApp(asyncClient, firebaseApp, getAuth(userAuth));
@@ -60,11 +61,13 @@ void cc::ClimaFire::firebaseCallback(AsyncResult& result)
     if (result.isError())
     {
         Serial.printf("Error msg: %s, code: %d\n", result.error().message().c_str(), result.error().code());
+        /*
         if (result.error().code() == -1)
         {
             Serial.println("Reiniciando Firebase...");
             initializeApp(unico.asyncClient, unico.firebaseApp, getAuth(unico.userAuth));
         }
+        */
     }
 
     if (result.available())
