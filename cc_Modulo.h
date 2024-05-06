@@ -19,7 +19,7 @@ namespace cc
     protected:
         Modulo(const String& id, const std::list<String>& dependencias = {});
 
-    private:
+    public:
         void iniciar();
     
     protected:

@@ -4,6 +4,10 @@
 #include <WiFiClientSecure.h>
 #include <FirebaseClient.h>
 #include "cc_credenciais.h"
+#include "cc_util.h"
+#include <map>
+#include <string>
+#include <ArduinoJson.h>
 
 typedef void (*FirebaseClientCallback)(AsyncResult&);
 
@@ -28,8 +32,9 @@ namespace cc
         AsyncClientClass asyncClient;
 
         RealtimeDatabase database;
-        WiFiClientSecure sslClientGet;
-        AsyncClientClass asyncClientGet;
+        
+        typedef void (*TratadorDeEventoRTDB)(JsonVariant doc);
+        ArvoreDeCaminho<TratadorDeEventoRTDB> tratadoresDeEventoRTDB;
 
         ClimaFire();
 
@@ -49,7 +54,11 @@ namespace cc
             unico.database.set(unico.asyncClient, caminho, val, firebaseCallback);
         }
 
-        static void get(const String& caminho, FirebaseClientCallback callback);
+        static void inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB tratador);
+
+        static void imprimirArv();
+    private:
+        void encaminharEventoRTDB(ArvoreDeCaminho<TratadorDeEventoRTDB>& arv, JsonVariant jsonVar);
     };
 }
 

@@ -3,6 +3,8 @@
 #include "cc_credenciais.h"
 #include "cc_util.h"
 
+#include <ArduinoJson.h>
+
 cc::ClimaFire cc::ClimaFire::unico;
 
 cc::ClimaFire::ClimaFire()
@@ -10,11 +12,9 @@ cc::ClimaFire::ClimaFire()
     Modulo("ClimaFire", {"wifi", "Serial"}),
     defaultNetwork(false),
     userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
-    asyncClient(sslClient, getNetwork(defaultNetwork)),
-    asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
+    asyncClient(sslClient, getNetwork(defaultNetwork))
 {
     sslClient.setInsecure();
-    sslClientGet.setInsecure();
 }
 
 void cc::ClimaFire::aoIniciar()
@@ -38,6 +38,8 @@ void cc::ClimaFire::tarefa()
 
     firebaseApp.getApp<RealtimeDatabase>(database);
     database.url(databaseUrl);
+
+    database.get(asyncClient, "/", firebaseCallback, true);
 
     while (1)
     {
@@ -72,7 +74,18 @@ void cc::ClimaFire::firebaseCallback(AsyncResult& result)
 
     if (result.available())
     {
-        Serial.printf("payload: %s\n", result.c_str());
+        String json = result.payload();
+        json = json.substring(json.indexOf('{'), json.lastIndexOf('}') + 1);
+
+        JsonDocument doc;
+        deserializeJson(doc, json);
+
+        if (doc.containsKey("data") && doc.containsKey("path"))
+        {
+            const char* caminho = doc["path"];
+            
+            unico.encaminharEventoRTDB(unico.tratadoresDeEventoRTDB[caminho], doc["data"]);
+        }
     }
 }
 
@@ -81,7 +94,30 @@ bool cc::ClimaFire::pronto()
     return unico.firebaseApp.ready();
 }
 
-void cc::ClimaFire::get(const String& caminho, FirebaseClientCallback callback)
+void cc::ClimaFire::inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB tratador)
 {
-    unico.database.get(unico.asyncClientGet, caminho, callback, true);
+    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor = tratador;
+}
+
+void cc::ClimaFire::imprimirArv()
+{
+    unico.tratadoresDeEventoRTDB.imprimir();
+}
+
+void cc::ClimaFire::encaminharEventoRTDB(ArvoreDeCaminho<TratadorDeEventoRTDB>& arv, JsonVariant jsonVar)
+{
+    if (!arv.mapa.empty())
+    {
+        for (auto& [chave, valor] : arv.mapa)
+        {
+            if (jsonVar.containsKey(chave.c_str()))
+            {
+                encaminharEventoRTDB(valor, jsonVar[chave.c_str()]);
+            }
+        }
+    }
+    if (arv.valor)
+    {
+        arv.valor(jsonVar);
+    }
 }

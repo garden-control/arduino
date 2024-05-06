@@ -5,13 +5,33 @@
 #include "cc_pluviometro.h"
 #include "cc_clino.h"
 #include "cc_globais.h"
+#include "cc_util.h"
+#include "cc_ClimaFire.h"
+
 #include <list>
 
 cc::Clino cliSerial(Serial, "cliSerial");
 
+void getCb(JsonVariant var)
+{
+    if (var.is<int>())
+        Serial.print("Yep. It's an int: ");
+    serializeJsonPretty(var, Serial);
+    Serial.println();
+}
+
 void setup()
 {
     cc::iniciarModulos();
+
+    cc::ClimaFire::inscreverParaEventoRTDB("teste/string", getCb);
+    cc::ClimaFire::inscreverParaEventoRTDB("teste/int", getCb);
+    cc::ClimaFire::inscreverParaEventoRTDB("teste", getCb);
+    cc::ClimaFire::inscreverParaEventoRTDB("", getCb);
+
+
+    delay(5000);
+    //cc::ClimaFire::imprimirArv();
 }
 
 struct leitura
@@ -21,7 +41,6 @@ struct leitura
 std::list<leitura> leituras;
 long long int tp1 = 0, tp2 = 0;
 
-#include "cc_ClimaFire.h"
 
 void loop()
 {
@@ -56,9 +75,5 @@ void loop()
     tp1 = millis();
     */
 
-    static int count = 0;
-    if (cc::ClimaFire::pronto())
-        cc::ClimaFire::set("teste/int", count++);
-
-    delay(10000);
+    delay(1000);
 }
