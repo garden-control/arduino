@@ -32,10 +32,21 @@ namespace cc
         AsyncClientClass asyncClient;
 
         RealtimeDatabase database;
-        
-        typedef void (*TratadorDeEventoRTDB)(JsonVariant doc);
-        ArvoreDeCaminho<TratadorDeEventoRTDB> tratadoresDeEventoRTDB;
+        WiFiClientSecure sslClientGet;
+        AsyncClientClass asyncClientGet;
 
+    public:
+        struct TratadorDeEventoRTDB
+        {
+            typedef void (*Metodo)(JsonVariant doc, void* pvArgs);
+            Metodo metodo;
+            void* pvArgs = nullptr;
+        };
+    
+    private:
+        ArvoreDeCaminho<TratadorDeEventoRTDB> tratadoresDeEventoRTDB;
+    
+    private:
         ClimaFire();
 
         void aoIniciar() override;
@@ -54,7 +65,7 @@ namespace cc
             unico.database.set(unico.asyncClient, caminho, val, firebaseCallback);
         }
 
-        static void inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB tratador);
+        static void inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB::Metodo tratador, void* pvArgs = nullptr);
 
         static void imprimirArv();
     private:

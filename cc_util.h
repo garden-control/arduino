@@ -41,7 +41,12 @@ namespace cc
     {
     public:
         std::map<std::string, ArvoreDeCaminho> mapa;
-        T valor;
+        T* valor = nullptr;
+        ~ArvoreDeCaminho()
+        {
+            if (valor) 
+                delete valor;
+        }
         //diretorios do caminho separados por "/"
         ArvoreDeCaminho& operator[](String caminho)
         {
@@ -55,11 +60,9 @@ namespace cc
 
             for (int indiceBarra = caminho.indexOf('/'); indiceBarra != -1; indiceBarra = caminho.indexOf('/'))
             {
-                DEBUG_SERIAL("%s/", caminho.substring(0, indiceBarra).c_str());
                 arv = &arv->mapa[caminho.substring(0, indiceBarra).c_str()];
                 caminho = caminho.substring(indiceBarra + 1);
             }
-            DEBUG_SERIAL("%s\n", caminho.c_str());
             return arv->mapa[caminho.c_str()];
         }
         ArvoreDeCaminho* seExistir(String caminho)

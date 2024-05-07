@@ -12,9 +12,11 @@ cc::ClimaFire::ClimaFire()
     Modulo("ClimaFire", {"wifi", "Serial"}),
     defaultNetwork(false),
     userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
-    asyncClient(sslClient, getNetwork(defaultNetwork))
+    asyncClient(sslClient, getNetwork(defaultNetwork)),
+    asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
 {
     sslClient.setInsecure();
+    sslClientGet.setInsecure();
 }
 
 void cc::ClimaFire::aoIniciar()
@@ -39,7 +41,7 @@ void cc::ClimaFire::tarefa()
     firebaseApp.getApp<RealtimeDatabase>(database);
     database.url(databaseUrl);
 
-    database.get(asyncClient, "/", firebaseCallback, true);
+    database.get(asyncClientGet, "/", firebaseCallback, true);
 
     while (1)
     {
@@ -94,9 +96,11 @@ bool cc::ClimaFire::pronto()
     return unico.firebaseApp.ready();
 }
 
-void cc::ClimaFire::inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB tratador)
+void cc::ClimaFire::inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB::Metodo tratador, void* pvArgs)
 {
-    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor = tratador;
+    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor = new TratadorDeEventoRTDB;
+    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor->metodo = tratador;
+    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor->pvArgs = pvArgs;
 }
 
 void cc::ClimaFire::imprimirArv()
@@ -118,6 +122,6 @@ void cc::ClimaFire::encaminharEventoRTDB(ArvoreDeCaminho<TratadorDeEventoRTDB>& 
     }
     if (arv.valor)
     {
-        arv.valor(jsonVar);
+        arv.valor->metodo(jsonVar, arv.valor->pvArgs);
     }
 }

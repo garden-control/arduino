@@ -7,31 +7,18 @@
 #include "cc_globais.h"
 #include "cc_util.h"
 #include "cc_ClimaFire.h"
+#include "cc_ClimaFireStream.h"
+#include "cc_util.h"
 
 #include <list>
 
-cc::Clino cliSerial(Serial, "cliSerial");
+//cc::Clino cliSerial(Serial, "cliSerial");
 
-void getCb(JsonVariant var)
-{
-    if (var.is<int>())
-        Serial.print("Yep. It's an int: ");
-    serializeJsonPretty(var, Serial);
-    Serial.println();
-}
+cc::ClimaFireStream cliStream("cli");
 
 void setup()
 {
     cc::iniciarModulos();
-
-    cc::ClimaFire::inscreverParaEventoRTDB("teste/string", getCb);
-    cc::ClimaFire::inscreverParaEventoRTDB("teste/int", getCb);
-    cc::ClimaFire::inscreverParaEventoRTDB("teste", getCb);
-    cc::ClimaFire::inscreverParaEventoRTDB("", getCb);
-
-
-    delay(5000);
-    //cc::ClimaFire::imprimirArv();
 }
 
 struct leitura
@@ -75,5 +62,17 @@ void loop()
     tp1 = millis();
     */
 
+   
+   if (cliStream.available())
+   {
+        while (cliStream.available())
+            Serial.print((char)cliStream.read());    
+        Serial.println();
+   }
+
+    while (Serial.available())
+        cliStream.print((char)Serial.read());
+  
+    
     delay(1000);
 }
