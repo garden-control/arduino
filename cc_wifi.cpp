@@ -14,6 +14,8 @@ cc::wifi::wifi()
 }
 void cc::wifi::aoIniciar()
 {
+    WiFi.mode(WIFI_AP_STA);
+
     WiFi.onEvent(aoEventoWifi);
 
     mtx_spiffs.capturar();
