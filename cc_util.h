@@ -52,12 +52,8 @@ namespace cc
     {
     public:
         std::map<std::string, ArvoreDeCaminho> mapa;
-        T* valor = nullptr;
-        ~ArvoreDeCaminho()
-        {
-            if (valor) 
-                delete valor;
-        }
+        T valor;
+
         //diretorios do caminho separados por "/"
         ArvoreDeCaminho& operator[](String caminho)
         {
@@ -76,23 +72,28 @@ namespace cc
             }
             return arv->mapa[caminho.c_str()];
         }
-        ArvoreDeCaminho* seExistir(String caminho)
+        ArvoreDeCaminho* seExistir(String caminho, String& chave)
         {
-            cc::ArvoreDeCaminho<T>& arv = *this;
+            cc::ArvoreDeCaminho<T>* arv = this;
 
             if (caminho.startsWith("/")) caminho = caminho.substring(1);
             if (caminho.endsWith("/")) caminho = caminho.substring(0, caminho.length() - 1);
 
-            for (int indiceBarra = caminho.indexOf('/'); indiceBarra != -1; indiceBarra = caminho.indexOf('/'))
+            if (caminho.isEmpty())
+                return this;
+
+            for (int indiceBarra = caminho.indexOf('/');; indiceBarra = caminho.indexOf('/'))
             {
-                if (arv.mapa.count(caminho.substring(0, indiceBarra).c_str()))
+                if (arv->mapa.count(caminho.substring(0, indiceBarra).c_str()))
                 {
-                    arv = arv.mapa[caminho.substring(0, indiceBarra).c_str()];
+                    chave = caminho.substring(0, indiceBarra).c_str();
+                    arv = &arv->mapa[caminho.substring(0, indiceBarra).c_str()];
                     caminho = caminho.substring(indiceBarra + 1);
                 }
-                else return nullptr;
+                else return arv;
             }
-            return &arv.mapa[caminho.c_str()];
+            chave = caminho.c_str();
+            return &arv->mapa[caminho.c_str()];
         }
         void imprimir(int nProfundidade = 0)
         {

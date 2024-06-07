@@ -57,7 +57,7 @@ void cc::wifi::aoEventoWifi(WiFiEvent_t evento)
 
         unico.transmitirEvento("DESCONECTADO");
 
-        WiFi.begin(ssid, senha);
+        WiFi.reconnect();
         break;
     }
 }

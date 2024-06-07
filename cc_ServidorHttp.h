@@ -14,7 +14,7 @@ namespace cc
     {
     private:
         static constexpr char* caminhoConfig = "/wifiAp.txt";
-        String ssid = "Estacao ClimaCare", senha = "admin";
+        String ssid = "Estacao ClimaCare", senha = "administrador";
 
         ServidorHttp();
 

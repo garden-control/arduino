@@ -10,6 +10,8 @@
 #include "cc_sens_solo.h"
 #include "cc_wifi.h"
 
+#include "cc_ClimaFire.h"
+
 namespace cc
 {
     class Comandos : Modulo
@@ -24,7 +26,9 @@ namespace cc
                 {"ctrlSetMin", Clino::Comando(ctrlSetMin, "Configura a umidade minima permitida")},
                 {"ctrlSetMax", Clino::Comando(ctrlSetMax, "Configura a umidade maxima permitida")},
 
-                {"wifiConfig", Clino::Comando(wifiConfig, "Configura SSID e senha da rede wifi")}
+                {"wifiConfig", Clino::Comando(wifiConfig, "Configura SSID e senha da rede wifi")},
+
+                {"arv", Clino::Comando(arv, "imprimir arvore")}
             });
         }
 
@@ -37,9 +41,7 @@ namespace cc
         }
         static String ctrlStatus(StreamString &entrada)
         {
-            cc::sens_reserv::liga(10);
-            bool reserv = !cc::sens_reserv::vazio();
-            cc::sens_reserv::desliga();
+            int nivel = cc::sens_reserv::nivel();
 
             cc::sens_solo::liga(10);
             float umidade = cc::sens_solo::umidade();
@@ -47,7 +49,7 @@ namespace cc
 
             String str;
             str += String() + "Controlador:  " + (cc::controlador_solo::pausa ? "pausado" : "ativo") + "\n";
-            str += String() + "Reservatorio: " + (reserv ? "ok" : "vazio") + "\n";
+            str += String() + "Reservatorio: " + nivel + "\n";
             str += String() + "Umidade:      " + umidade + "\n";
             str += String() + "Minima:       " + controlador_solo::f_umidade_min + "\n";
             str += String() + "Maxima:       " + controlador_solo::f_umidade_max + "\n\n";
@@ -87,6 +89,11 @@ namespace cc
                 delete arg.second;
 
             return erros;
+        }
+        static String arv(StreamString& entrada)
+        {
+            cc::ClimaFire::unico.tratadoresDeEventoRTDB.imprimir();
+            return ""; 
         }
     } Comandos::unico;
 }

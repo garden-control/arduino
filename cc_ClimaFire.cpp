@@ -9,14 +9,8 @@ cc::ClimaFire cc::ClimaFire::unico;
 
 cc::ClimaFire::ClimaFire()
     :
-    Modulo("ClimaFire", {"wifi", "Serial"}),
-    defaultNetwork(false),
-    userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
-    asyncClient(sslClient, getNetwork(defaultNetwork)),
-    asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
+    Modulo("ClimaFire", {"wifi", "Serial"})
 {
-    sslClient.setInsecure();
-    sslClientGet.setInsecure();
 }
 
 void cc::ClimaFire::aoIniciar()
@@ -30,23 +24,18 @@ void cc::ClimaFire::tarefa(void* pvArgs)
 }
 void cc::ClimaFire::tarefa()
 {
-    while (!cc::wifi::conectado()) delay(500);
-    
-    firebaseApp.setCallback(firebaseCallback);
-    initializeApp(asyncClient, firebaseApp, getAuth(userAuth));
-
-    long long unsigned int ms = millis();
-    while (firebaseApp.isInitialized() && !firebaseApp.ready() && millis() - ms < 120 * 1000);
-
-    firebaseApp.getApp<RealtimeDatabase>(database);
-    database.url(databaseUrl);
-
-    database.get(asyncClientGet, "/", firebaseCallback, true);
-
+    transmitirEvento("PREPARAR_GET");
+    pPacoteFirebase = new PacoteFirebase();
+    pPacoteFirebase->iniciar();
     while (1)
     {
-        firebaseApp.loop();
-        database.loop();
+        if (bReiniciarWiFi)
+        {
+            bReiniciarWiFi = false;
+            WiFi.reconnect();
+        }
+        pPacoteFirebase->firebaseApp.loop();
+        pPacoteFirebase->database.loop();
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
@@ -65,13 +54,13 @@ void cc::ClimaFire::firebaseCallback(AsyncResult& result)
     if (result.isError())
     {
         Serial.printf("Error msg: %s, code: %d\n", result.error().message().c_str(), result.error().code());
-        /*
+        
+        
         if (result.error().code() == -1)
         {
-            Serial.println("Reiniciando Firebase...");
-            initializeApp(unico.asyncClient, unico.firebaseApp, getAuth(unico.userAuth));
+            Serial.println("Reiniciando WiFi...");
+            unico.bReiniciarWiFi = true;
         }
-        */
     }
 
     if (result.available())
@@ -84,44 +73,103 @@ void cc::ClimaFire::firebaseCallback(AsyncResult& result)
 
         if (doc.containsKey("data") && doc.containsKey("path"))
         {
-            const char* caminho = doc["path"];
-            
-            unico.encaminharEventoRTDB(unico.tratadoresDeEventoRTDB[caminho], doc["data"]);
+            String caminho = doc["path"];
+            String chave;
+            auto arv = unico.tratadoresDeEventoRTDB.seExistir(caminho, chave); //retorna o ultimo nodo que existe no caminho
+            if (arv)
+            {
+                // reconstruir json parcial ate o ultimo nodo encontrado (arv)
+                String docParcial;
+                serializeJson(doc["data"], docParcial);
+
+                //remover '/' inicial e final
+                if (caminho.startsWith("/")) caminho = caminho.substring(1);
+                if (caminho.endsWith("/")) caminho = caminho.substring(0, caminho.length() - 1);
+
+                if (!caminho.isEmpty())
+                {
+                    while (1)
+                    {
+                        int indiceUltimaBarra = caminho.lastIndexOf('/'); 
+
+                        String chavePai = caminho.substring(indiceUltimaBarra + 1); 
+                        
+                        if (chavePai != chave)
+                        {
+                            docParcial = "{\"" + chavePai + "\":" + docParcial + '}';
+                        }
+                        else break;
+                        
+                        if (indiceUltimaBarra == -1) 
+                            break;
+
+                        caminho = caminho.substring(0, indiceUltimaBarra);
+                    }
+                }
+                deserializeJson(doc, docParcial);
+                unico.encaminharEventoRTDB(*arv, doc, chave);
+            }
         }
     }
 }
 
 bool cc::ClimaFire::pronto()
 {
-    return unico.firebaseApp.ready();
+    unico.mtxPacoteFirebase.capturar();
+    bool res = unico.pPacoteFirebase && unico.pPacoteFirebase->firebaseApp.ready();
+    unico.mtxPacoteFirebase.liberar();
+    return res;
 }
 
 void cc::ClimaFire::inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB::Metodo tratador, void* pvArgs)
 {
-    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor = new TratadorDeEventoRTDB;
-    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor->metodo = tratador;
-    unico.tratadoresDeEventoRTDB[caminho.c_str()].valor->pvArgs = pvArgs;
+    auto& val = unico.tratadoresDeEventoRTDB[caminho.c_str()].valor = std::unique_ptr<TratadorDeEventoRTDB>(new TratadorDeEventoRTDB());
+    val->metodo = tratador;
+    val->pvArgs = pvArgs;
 }
 
-void cc::ClimaFire::imprimirArv()
-{
-    unico.tratadoresDeEventoRTDB.imprimir();
-}
-
-void cc::ClimaFire::encaminharEventoRTDB(ArvoreDeCaminho<TratadorDeEventoRTDB>& arv, JsonVariant jsonVar)
+void cc::ClimaFire::encaminharEventoRTDB(ArvoreDeCaminho<std::unique_ptr<TratadorDeEventoRTDB>>& arv, JsonVariant jsonVar, const String& chave)
 {
     if (!arv.mapa.empty())
     {
-        for (auto& [chave, valor] : arv.mapa)
+        for (auto& [chaveFilho, valor] : arv.mapa)
         {
-            if (jsonVar.containsKey(chave.c_str()))
+            if (jsonVar.containsKey(chaveFilho.c_str()))
             {
-                encaminharEventoRTDB(valor, jsonVar[chave.c_str()]);
+                encaminharEventoRTDB(valor, jsonVar[chaveFilho.c_str()], chaveFilho.c_str());
             }
         }
     }
     if (arv.valor)
     {
+        DEBUG_SERIAL("[encaminharEventoRTDB] Chamando metodo de %s.\n", chave.c_str());
         arv.valor->metodo(jsonVar, arv.valor->pvArgs);
     }
+}
+
+cc::ClimaFire::PacoteFirebase::PacoteFirebase()
+    :
+    defaultNetwork(false),
+    userAuth(apiKey, usuarioEmail, usuarioSenha, 3000),
+    asyncClient(sslClient, getNetwork(defaultNetwork)),
+    asyncClientGet(sslClientGet, getNetwork(defaultNetwork))
+{
+    sslClient.setInsecure();
+    sslClientGet.setInsecure();
+}
+void cc::ClimaFire::PacoteFirebase::iniciar()
+{
+    DEBUG_SERIAL("[Pacote Firebase] Aguardando Wi-Fi para iniciar...\n");
+    while (!cc::wifi::conectado()) delay(500);
+    
+    firebaseApp.setCallback(firebaseCallback);
+    initializeApp(asyncClient, firebaseApp, getAuth(userAuth));
+
+    long long unsigned int ms = millis();
+    while (firebaseApp.isInitialized() && !firebaseApp.ready() && millis() - ms < 120 * 1000);
+
+    firebaseApp.getApp<RealtimeDatabase>(database);
+    database.url(databaseUrl);
+
+    database.get(asyncClientGet, "/usuarios/TzLMoL0JrcMkX1JNVCXHSds8x3J2/estacoes/0/variaveis", firebaseCallback, true);
 }

@@ -130,7 +130,6 @@ const __FlashStringHelper* indexHtml = F(
             "gap: 5px;"
         "}"
     "</style>"
-    "<link rel=\"stylesheet\" href=\"style.css\">"
 "</head>"
 ""
 "<body>"

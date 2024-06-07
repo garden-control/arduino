@@ -2,13 +2,6 @@
 #include "cc_pins.h"
 #include <Arduino.h>
 
-float cc::sens_reserv::gatilho = 0.45f; //acima desse valor, o reservatorio esta vazio 
-
-float cc::sens_reserv::f_valor = 0.0f;
-
-char cc::sens_reserv::ligado = 0;
-cc::mutex cc::sens_reserv::mtx_ligado;
-
 cc::sens_reserv cc::sens_reserv::unico;
 
 cc::sens_reserv::sens_reserv()
@@ -19,38 +12,21 @@ cc::sens_reserv::sens_reserv()
 void cc::sens_reserv::aoIniciar() {
   pinMode(PIN::SENS_RESERV, INPUT);
   pinMode(PIN::LIGA_SENS_RESERV, OUTPUT);
-  xTaskCreate(tarefa_leitura, "leitura_sens_reserv", 2048, nullptr, 1, nullptr);
+  digitalWrite(PIN::LIGA_SENS_RESERV, HIGH);
 }
-bool cc::sens_reserv::vazio() {
-  //return f_valor > gatilho;
-  return false;
-}
-float cc::sens_reserv::valor() {
-  return f_valor;
-}
-void cc::sens_reserv::liga(int espera_n_amostras) {
-  mtx_ligado.capturar();
-  ligado++;
-  mtx_ligado.liberar();
-  if (espera_n_amostras)
-    delay(espera_n_amostras * dt);
-}
-void cc::sens_reserv::desliga() {
-  mtx_ligado.capturar();
-  ligado -= (ligado > 0);
-  mtx_ligado.liberar();
-}
-void cc::sens_reserv::tarefa_leitura(void* pv_args) {
-  while (1) {
-    while (!ligado) delay(10);
-
-    digitalWrite(PIN::LIGA_SENS_RESERV, HIGH);
-    delay(1);
-    f_valor = (float)analogRead(PIN::SENS_RESERV) / 4095.0f;
-    while (ligado) {
-      delay(dt);
-      f_valor += ((float)analogRead(PIN::SENS_RESERV) / 4095.0f - f_valor) * peso;
-    }
-    digitalWrite(PIN::LIGA_SENS_RESERV, LOW);
+int cc::sens_reserv::nivel()
+{
+  float x = (float)analogRead(PIN::SENS_RESERV) / 4096.0f;
+  int i = 4;
+  float min_erro = abs(x - (1.0f / 4.0f));
+  for (int j = 3; j >= 1; j--)
+  {
+      float erro = abs(x - (1.0f / (float)j));
+      if (erro < min_erro)
+      {
+          min_erro = erro;
+          i = j;
+      }
   }
+  return 4 - i;
 }
