@@ -10,6 +10,7 @@
 #include <string>
 #include <ArduinoJson.h>
 #include <memory>
+#include <vector>
 
 typedef void (*FirebaseClientCallback)(AsyncResult&);
 
@@ -56,7 +57,7 @@ namespace cc
             void* pvArgs = nullptr;
         };
 
-        ArvoreDeCaminho<std::unique_ptr<TratadorDeEventoRTDB>> tratadoresDeEventoRTDB;
+        std::vector<std::unique_ptr<TratadorDeEventoRTDB>> tratadoresDeEventoRTDB;
     
     private:
         ClimaFire();
@@ -72,12 +73,12 @@ namespace cc
         static bool pronto();
 
         template <typename T>
-        static void setVariaveis(const String& caminho, const T& val)
+        static void set(const String& caminho, const T& val)
         {
             if (unico.pPacoteFirebase)
             {
                 unico.mtxPacoteFirebase.capturar();
-                unico.pPacoteFirebase->database.set(unico.pPacoteFirebase->asyncClient, "/usuarios/TzLMoL0JrcMkX1JNVCXHSds8x3J2/estacoes/0/variaveis" + caminho, val, firebaseCallback);
+                unico.pPacoteFirebase->database.set(unico.pPacoteFirebase->asyncClient, "/usuarios/TzLMoL0JrcMkX1JNVCXHSds8x3J2/estacoes/0/" + caminho, val, firebaseCallback);
                 unico.mtxPacoteFirebase.liberar();
             }
         }
@@ -93,10 +94,7 @@ namespace cc
             }
         }
 
-        static void inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB::Metodo tratador, void* pvArgs = nullptr);
-
-        private:
-            void encaminharEventoRTDB(ArvoreDeCaminho<std::unique_ptr<TratadorDeEventoRTDB>>& arv, JsonVariant jsonVar, const String& chave);
+        static void inscreverParaEventoRTDB(TratadorDeEventoRTDB::Metodo tratador, void* pvArgs = nullptr);
     };
 }
 

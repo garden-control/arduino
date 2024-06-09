@@ -8,6 +8,9 @@
 #include "cc_controlador_solo.h"
 #include "cc_sens_reserv.h"
 #include "cc_sens_solo.h"
+#include "cc_sens_dht.h"
+#include "cc_pluviometro.h"
+
 #include "cc_wifi.h"
 
 #include "cc_ClimaFire.h"
@@ -26,9 +29,11 @@ namespace cc
                 {"ctrlSetMin", Clino::Comando(ctrlSetMin, "Configura a umidade minima permitida")},
                 {"ctrlSetMax", Clino::Comando(ctrlSetMax, "Configura a umidade maxima permitida")},
 
-                {"wifiConfig", Clino::Comando(wifiConfig, "Configura SSID e senha da rede wifi")},
+                {"lerDht", Clino::Comando(lerDht, "Le valores do sensor dht")},
+                {"lerIndicePluv", Clino::Comando(lerIndicePluv, "Le indice pluviometrico em mm")},
 
-                {"arv", Clino::Comando(arv, "imprimir arvore")}
+                {"wifiConfig", Clino::Comando(wifiConfig, "Configura SSID e senha da rede wifi")}
+
             });
         }
 
@@ -64,6 +69,21 @@ namespace cc
         {
             return "";
         }
+
+        static String lerDht(StreamString &entrada)
+        {
+            float temp = cc::sens_dht::temperatura();
+            float umid = cc::sens_dht::umidade();
+
+            return String() + "Temperatura: " + temp + "\nUmidade: " + umid + "\n\n";
+        }
+
+        static String lerIndicePluv(StreamString &entrada)
+        {
+            float indice = cc::pluv::indice_mm();
+            return String(indice) + " mm\n\n";
+        }
+
         static String wifiConfig(StreamString &entrada)
         {
             std::map<std::string, void*> args;
@@ -89,11 +109,6 @@ namespace cc
                 delete arg.second;
 
             return erros;
-        }
-        static String arv(StreamString& entrada)
-        {
-            cc::ClimaFire::unico.tratadoresDeEventoRTDB.imprimir();
-            return ""; 
         }
     } Comandos::unico;
 }

@@ -31,7 +31,7 @@ void cc::controlador_solo::tarefa_controle(void *pv_args)
                 // atualizar status
                 if (!bomba)
                 {
-                    cc::ClimaFire::setVariaveis("/controlador/bomba", true);
+                    cc::ClimaFire::set("variaveis/controlador_bomba", true);
                 }
 
                 digitalWrite(PIN::LIGA_BOMBA, HIGH);
@@ -44,14 +44,13 @@ void cc::controlador_solo::tarefa_controle(void *pv_args)
 
                 // atualizar status
                 bomba = false;
-                cc::ClimaFire::setVariaveis("/controlador/bomba", false);
-                cc::ClimaFire::setVariaveis("/controlador/reserv", nivel_reservatorio);
+                cc::ClimaFire::set("variaveis/controlador_bomba", false);
             }
             else if (bomba)
             {
                 // atualizar status
                 bomba = false;
-                cc::ClimaFire::setVariaveis("/controlador/bomba", false);
+                cc::ClimaFire::set("variaveis/controlador_bomba", false);
             }
             sens_solo::desliga();
             // espera 5 segundos checando para "pausa" e "bomba" a cada 100ms (para facilitar demonstração em bancada)
@@ -72,7 +71,7 @@ void cc::controlador_solo::aoReceberEvento(const String& idModulo, const String&
     if (idModulo == "ClimaFire" && evento == "PREPARAR_GET")
     {
         iniciar();
-        cc::ClimaFire::inscreverParaEventoRTDB("/controlador", aoEventoRTDB, this);
+        cc::ClimaFire::inscreverParaEventoRTDB(aoEventoRTDB, this);
     }
 }
 
@@ -83,25 +82,25 @@ void cc::controlador_solo::aoEventoRTDB(JsonVariant var, void* pvArgs)
 
 void cc::controlador_solo::aoEventoRTDB(JsonVariant var)
 {
-    if (var.containsKey("ativo"))
+    if (var.containsKey("controlador_ativo"))
     {
-        bool bAtivo = var["ativo"];
+        bool bAtivo = var["controlador_ativo"];
         pausa = !bAtivo;
         DEBUG_SERIAL("[controldaor_solo] \"pausa\" configurado para \"%s\".\n", pausa ? "true" : "false");
     }
-    if (var.containsKey("bomba"))
+    if (var.containsKey("controlador_bomba"))
     {
-        bomba = var["bomba"];
+        bomba = var["controlador_bomba"];
         DEBUG_SERIAL("[controldaor_solo] \"bomba\" configurado para \"%s\".\n", bomba ? "true" : "false");
     }
-    if (var.containsKey("umidade_max"))
+    if (var.containsKey("controlador_umidade_max"))
     {
-        f_umidade_max = var["umidade_max"];
+        f_umidade_max = var["controlador_umidade_max"];
         DEBUG_SERIAL("[controldaor_solo] \"f_umidade_max\" configurado para %.2f.\n", f_umidade_max);
     }
-    if (var.containsKey("umidade_min"))
+    if (var.containsKey("controlador_umidade_min"))
     {
-        f_umidade_min = var["umidade_min"];
+        f_umidade_min = var["controlador_umidade_min"];
         DEBUG_SERIAL("[controldaor_solo] \"f_umidade_mi;n\" configurado para %.2f.\n", f_umidade_min);
     }
 }

@@ -21,26 +21,25 @@ cc::Clino cliSerial(Serial, "cliSerial");
 unsigned long long intervaloLeituras = 30000; //ms
 void aoEventoRTDB_leituras(JsonVariant var, void*)
 {
-    serializeJsonPretty(var, Serial);
-    if (var.containsKey("intervalo_s"))
+    if (var.containsKey("leituras_intervalo_s"))
     {
-        long long novoIntervalo_s = var["intervalo_s"];
+        int novoIntervalo_s = var["leituras_intervalo_s"];
         if (novoIntervalo_s >= 30)
         {
-            intervaloLeituras = novoIntervalo_s * 1000LL;
+            intervaloLeituras = (long long)novoIntervalo_s * 1000LL;
             DEBUG_SERIAL("[Leituras] Intervalo configurado para %i segundos.\n", novoIntervalo_s);
         }
         else
         {
             DEBUG_SERIAL("[Leituras] Intervalo de leituras invalido (%i).\n", novoIntervalo_s);
-            cc::ClimaFire::setVariaveis("/leituras/intervalo_s", (int)(intervaloLeituras / 1000));
+            cc::ClimaFire::set("variaveis/leituras_intervalo_s", (int)(intervaloLeituras / 1000));
         }
     }
 }
 
 void setup()
 {
-    cc::ClimaFire::inscreverParaEventoRTDB("/leituras", aoEventoRTDB_leituras);
+    cc::ClimaFire::inscreverParaEventoRTDB(aoEventoRTDB_leituras);
     cc::iniciarModulos();
 }
 

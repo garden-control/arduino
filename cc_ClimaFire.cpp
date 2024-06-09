@@ -73,41 +73,16 @@ void cc::ClimaFire::firebaseCallback(AsyncResult& result)
 
         if (doc.containsKey("data") && doc.containsKey("path"))
         {
-            String caminho = doc["path"];
-            String chave;
-            auto arv = unico.tratadoresDeEventoRTDB.seExistir(caminho, chave); //retorna o ultimo nodo que existe no caminho
-            if (arv)
+            JsonDocument doc2;
+            String path = doc["path"];
+            path = path.substring(1);
+
+            if (!path.isEmpty()) doc2[path.c_str()] = doc["data"];
+            else doc2 = doc["data"];
+
+            for (auto& tratador : unico.tratadoresDeEventoRTDB)
             {
-                // reconstruir json parcial ate o ultimo nodo encontrado (arv)
-                String docParcial;
-                serializeJson(doc["data"], docParcial);
-
-                //remover '/' inicial e final
-                if (caminho.startsWith("/")) caminho = caminho.substring(1);
-                if (caminho.endsWith("/")) caminho = caminho.substring(0, caminho.length() - 1);
-
-                if (!caminho.isEmpty())
-                {
-                    while (1)
-                    {
-                        int indiceUltimaBarra = caminho.lastIndexOf('/'); 
-
-                        String chavePai = caminho.substring(indiceUltimaBarra + 1); 
-                        
-                        if (chavePai != chave)
-                        {
-                            docParcial = "{\"" + chavePai + "\":" + docParcial + '}';
-                        }
-                        else break;
-                        
-                        if (indiceUltimaBarra == -1) 
-                            break;
-
-                        caminho = caminho.substring(0, indiceUltimaBarra);
-                    }
-                }
-                deserializeJson(doc, docParcial);
-                unico.encaminharEventoRTDB(*arv, doc, chave);
+                tratador->metodo(doc2, tratador->pvArgs);
             }
         }
     }
@@ -121,30 +96,11 @@ bool cc::ClimaFire::pronto()
     return res;
 }
 
-void cc::ClimaFire::inscreverParaEventoRTDB(String caminho, TratadorDeEventoRTDB::Metodo tratador, void* pvArgs)
+void cc::ClimaFire::inscreverParaEventoRTDB(TratadorDeEventoRTDB::Metodo tratador, void* pvArgs)
 {
-    auto& val = unico.tratadoresDeEventoRTDB[caminho.c_str()].valor = std::unique_ptr<TratadorDeEventoRTDB>(new TratadorDeEventoRTDB());
-    val->metodo = tratador;
-    val->pvArgs = pvArgs;
-}
-
-void cc::ClimaFire::encaminharEventoRTDB(ArvoreDeCaminho<std::unique_ptr<TratadorDeEventoRTDB>>& arv, JsonVariant jsonVar, const String& chave)
-{
-    if (!arv.mapa.empty())
-    {
-        for (auto& [chaveFilho, valor] : arv.mapa)
-        {
-            if (jsonVar.containsKey(chaveFilho.c_str()))
-            {
-                encaminharEventoRTDB(valor, jsonVar[chaveFilho.c_str()], chaveFilho.c_str());
-            }
-        }
-    }
-    if (arv.valor)
-    {
-        DEBUG_SERIAL("[encaminharEventoRTDB] Chamando metodo de %s.\n", chave.c_str());
-        arv.valor->metodo(jsonVar, arv.valor->pvArgs);
-    }
+    unico.tratadoresDeEventoRTDB.push_back(std::unique_ptr<TratadorDeEventoRTDB>(new TratadorDeEventoRTDB()));
+    unico.tratadoresDeEventoRTDB.back()->metodo = tratador;
+    unico.tratadoresDeEventoRTDB.back()->pvArgs = pvArgs;
 }
 
 cc::ClimaFire::PacoteFirebase::PacoteFirebase()
